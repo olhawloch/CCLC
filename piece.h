@@ -22,3 +22,5 @@ class Piece {
 	void calc_one_deep_moves();
 	void calc_legal_moves();
 };
+
+#endif
