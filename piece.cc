@@ -49,9 +49,7 @@ static Bitboard sudo_legal_pawn(Piece &p, Bitboard friends, Bitboard enemies,
 		slm |= p.pos >> (COL_SHIFT - 1);
 		slm |= p.pos >> (COL_SHIFT + 1);
 		if (pawn_move) {
-			// single move
 			tmp |= (p.pos >> COL_SHIFT) & ~filled;
-			// double move
 			tmp |= (tmp && p.pos & BLACK_DOUBLE_ROW) ? 
 				(p.pos >> 2 * COL_SHIFT) & ~filled : empty;
 			slm |= tmp;
@@ -59,6 +57,63 @@ static Bitboard sudo_legal_pawn(Piece &p, Bitboard friends, Bitboard enemies,
 	}
 
 	return slm & VALID_BOARD;
+}
+
+static Bitboard sudo_legal_rook(Piece &p, Bitboard friends, Bitboard enemies)
+{
+	Bitboard slm{0};
+	Bitboard tmp{0};
+	const Bitboard filled = friends | enemies;
+	// vertical up
+	int i = 1;
+	while(1) {
+		tmp = 0;
+		tmp |= p.pos << (COL_SHIFT * i);
+		if (tmp & ~VALID_BOARD)
+			break;
+		slm |= tmp;
+		if (tmp & filled)
+			break;
+		++i;
+	}
+	// vertical down
+	i = 1;
+	while(1) {
+		tmp = 0;
+		tmp |= p.pos >> (COL_SHIFT * i);
+		if (tmp & ~VALID_BOARD)
+			break;
+		slm |= tmp;
+		if (tmp & filled)
+			break;
+		++i;
+	}
+	// horizontal right 
+	i = 1;
+	while(1) {
+		tmp = 0;
+		tmp |= p.pos << i;
+		if (tmp & ~VALID_BOARD)
+			break;
+		slm |= tmp;
+		if (tmp & filled)
+			break;
+		++i;
+	}
+	// horizontal left 
+	i = 1;
+	while(1) {
+		tmp = 0;
+		tmp |= p.pos >> i;
+		if (tmp & ~VALID_BOARD)
+			break;
+		slm |= tmp;
+		if (tmp & filled)
+			break;
+		++i;
+	}
+
+	return slm;
 }
 
 static Bitboard sudo_legal_knight(Piece &p)
