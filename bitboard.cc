@@ -24,6 +24,7 @@ std::string print_bitboard(const Bitboard &b)
 	for (int i = COL_HEIGHT - 1; i >= 0; --i) {
 		s += std::to_string(i + 1);
 		s += " ";
+		s += (i + 1 < 10) ? " " : "";
 		for (int j = 0; j < COL_SHIFT; ++j) {
 			s+= board_string[i * COL_SHIFT + j];
 		}
