@@ -239,6 +239,18 @@ static Bitboard sudo_legal_queen(const Piece &p, const Bitboard &friends,
 
 static Bitboard sudo_legal_king(const Piece &p)
 {
+	Bitboard slm{0};
+
+	slm |= p.pos >> COL_SHIFT;
+	slm |= p.pos << COL_SHIFT;
+	slm |= p.pos >> COL_SHIFT + 1;
+	slm |= p.pos << COL_SHIFT + 1;
+	slm |= p.pos >> COL_SHIFT - 1;
+	slm |= p.pos << COL_SHIFT - 1;
+	slm |= p.pos >> 1;
+	slm |= p.pos << 1;
+
+	return slm & VALID_BOARD;
 }
 
 void Piece::calc_sudo_legal_moves(const Bitboard friends, const Bitboard enemies,
@@ -296,3 +308,4 @@ void Piece::calc_one_deep_moves(const Bitboard friends, const Bitboard enemies)
 		cassert(0);
 	}
 }
+
