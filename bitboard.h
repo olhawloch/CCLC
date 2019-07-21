@@ -17,8 +17,6 @@ extern const int COL_HEIGHT;
 
 std::string print_bitboard(const Bitboard &b);
 
-const int COL_HEIGHT = 12;
-
 /* The valid board
 0000000000
 0000000000
