@@ -21,14 +21,15 @@ std::string print_bitboard(const Bitboard &b)
 {
 	std::string board_string = b.to_string();
 	std::string s = "";
-	for (int i = COL_HEIGHT - 1; i >= 0; --i) {
-		s += std::to_string(i + 1);
+	for (int i = 0; i < 12; ++i) {
+		s += std::to_string(12 - i);
 		s += " ";
-		s += (i + 1 < 10) ? " " : "";
-		for (int j = 0; j < COL_SHIFT; ++j) {
+		s += (12 - i < 10) ? " " : "";
+		for (int j = 9; j >= 0; --j) {
 			s+= board_string[i * COL_SHIFT + j];
 		}
-		s += "\n";
+		s += "\n";	
 	}
+	s += "    ABCDEFGH \n";
 	return s;
 }
