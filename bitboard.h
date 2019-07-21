@@ -17,6 +17,8 @@ const Bitboard BLACK_DOUBLE_ROW(
 
 const int COL_SHIFT = 10;
 
+const int COL_HEIGHT = 12;
+
 /* The valid board
 0000000000
 0000000000
