@@ -21,15 +21,22 @@ class Piece {
 	
 	public:
 	Bitboard get_pos() const;
+	Type get_type() const;
+	Colour get_team() const;
 	Bitboard get_sudo_legal_moves() const;
 	Bitboard get_one_deep_moves() const;
 	Bitboard get_legal_moves() const;
 	void set_pos(Bitboard new_pos);
+	void set_type(Type t);
 	void calc_sudo_legal_moves(const Bitboard friends,
 			const Bitboard enemies, const bool pawn_move);
 	void calc_one_deep_moves(const Bitboard friends,
 			const Bitboard enemies);
-	void calc_legal_moves();
+	void calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
+			Bitboard checking_line,
+			const std::vector<Bitboard> &pinning,
+			Bitboard enemies_atk, bool double_check);
+	Bitboard line_to_king(const Bitboard king_pos);
 };
 
 #endif
