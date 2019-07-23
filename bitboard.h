@@ -12,6 +12,14 @@ extern const Bitboard VALID_BOARD;
 extern const Bitboard WHITE_DOUBLE_ROW;
 extern const Bitboard BLACK_DOUBLE_ROW;
 
+extern const Bitboard WHITE_PROMOTION;
+extern const Bitboard BLACK_PROMOTION;
+
+extern const Bitboard WHITE_KS_CASTLE;
+extern const Bitboard WHITE_QS_CASTLE;
+extern const Bitboard BLACK_KS_CASTLE;
+extern const Bitboard BLACK_QS_CASTLE;
+
 extern const int COL_SHIFT;
 extern const int COL_HEIGHT;
 

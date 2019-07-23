@@ -29,7 +29,8 @@ class Team {
 	// caclulate once per boardstate
 	void calc_legal_moves(const Bitboard friends, const Bitboard enemies,
 			Piece *checking, Bitboard checking_line,
-			const std::vector<Bitboard> &pinning, Bitboard enemies_atk);
+			const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
+			bool double_check);
 	Bitboard get_sudo_legal_moves() const;
 	Bitboard get_legal_moves() const;
 	// caclulate once per boardstate
@@ -42,6 +43,8 @@ class Team {
 	bool remove_piece(Bitboard pos);
 
 	std::string print_team() const;
+
+	Bitboard get_king_pos() const;
 };
 
 #endif

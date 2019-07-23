@@ -8,7 +8,7 @@ bool Team::check(Bitboard enemies_atk) const
 			king = &piece;
 		}
 	}
-	return (king.pos & enemies_atk).any();
+	return (king.get_pos() & enemies_atk).any();
 }
 
 Piece *Team::checking_piece(const Bitboard enemy_king_pos) const
@@ -72,11 +72,11 @@ void Team::calc_one_deep_moves(const Bitboard friends, const Bitboard enemies)
 
 void Team::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
 		Bitboard checking_line, const std::vector<Bitboard> &pinning,
-		Bitboard enemies_atk)
+		Bitboard enemies_atk, bool double_check)
 {
 	for (auto &piece : pieces) {
 		piece.calc_legal_moves(friends, enemies, checking, checking_line,
-				pinning, enemies_atk);
+				pinning, enemies_atk, double_check);
 	}
 }
 
@@ -226,4 +226,18 @@ std::string Team::print_team() const
 		board[pos.y * (COL_SHIFT - 2) + pos.x] = p;
 	}
 	return board;
+}
+
+Bitboard Team::get_king_pos() const
+{
+	Piece &king = nullptr;
+	for (auto &piece : pieces) {
+		if (piece.type == Type::KING) {
+			king = &piece;
+		}
+	}
+	if (king)
+		return king.get_pos();
+
+	return 0;
 }

@@ -1,14 +1,16 @@
 #include "boardstate.cc"
 #include <iostream>
 
+// returns negative if letter is not valid
 int convert_col(char letter)
 {	
 	if ('a' > letter || letter > 'h')
 		// not valid
-		assert(0);
+		return -1;
 	return letter - 'a' + 1;
 }
 
+// returns EMPTY if letter not valid
 Type convert_piece(char letter)
 {
 	Type t = Type::EMPTY;
@@ -38,93 +40,108 @@ Type convert_piece(char letter)
 	case 'K':
 		t = Type::KING;
 		break;
-	default:
-		// type is empty, should never be the case 
-		assert(0);
 	}
 	return t;
 }
 
-int main()
+void setup()
 {
 	// the two vectors that we are adding these pieces to
-	std::vector<Piece> white;
-	std::vector<Piece> black;
+	std::vector<Piece> w;
+	std::vector<Piece> b;
 
-	Team white{white, Colour::WHITE};
-	Team black{black, Colour::BLACK};
+	Team white{w, Colour::WHITE};
+	Team black{b, Colour::BLACK};
 
 	std::vector<Team> teams{white, black};
 
-	//have to immediately make it a boardstate so that we can print each time
+	// pass this by refrence instead and make in main
 	Boardstate bs{Colour::WHITE, "", 0, 0, 0, teams};
 
-	//have to deal with things being public and private, need getters for team vector
+	//have to deal with things being public and private,
+	//need getters for team vector
 
 	Bitboard tmp{0};
 	Bitboard empty{0}; //to initialize moves bitboards
-	std::string s;
-	std::string piece;
-	char piece_char;
+
+	std::string command;
+	std::string line;
+
+	std::string piece_char;
 	std::string posn;
-	char col_char;
 	int row;
 	int col;
 
 	//this can only happen if we are not currently in the middle of a game
-	while (cin >> s) {
-		if (s == "+") {
-			cin >> piece;
-			stringstream type(piece);
-			type >> piece_char;
-			cin >> posn;
-			stringstream p(posn);
-			p >> col_char;
-			col = convert_col(col_char);
-			p >> row;
-			Type type = convert_piece(piece_char);
-			Posn add{row, col};
+	while (std::cin >> command) {
+		if (command == "+") {
+			std::get_line(std::cin, line);
+			std::stringstream ss(line);
+			// get corresponding piece
+			ss >> piece_char;
+			if (piece_char.length() != 1)
+				continue;
+			Type type = convert_piece(piece_char[0]);
+			if (type == Type::EMPTY)
+				continue;
+			// get position on board
+			ss >> posn;
+			if (posn.length() != 2)
+				continue;
+			col = convert_col(posn[0]);
+			if (col < 0)
+				continue;
+			row = std::stoi(posn[1]);
+			Posn add{row - 1, col - 1};
 			tmp = add.to_bitboard();
-			//NOTE THAT IF A PIECE ALREADY EXISTS THERE WE MUST REPLACE IT
-			if (piece_char < 'a') { //capital -> WHITE
-				//add piece with Posn{col, row}
-				white.emplace_back(Piece{tmp, empty, empty, empty, type, Colour::WHITE});
-			} else { //lower ->BLACK {
-				//add piece with Posn{col, row}
-				black.emplace_back(Piece{tmp, empty, empty, empty, type, Colour::BLACK});
-			}
-		} else if (s == "-") {
-			cin >> posn;
-			stringstream p(posn);
-			p >> col_char;
-			col = convert_col(col_char);
-			p >> row;
-			Posn remove{row, col};
-			tmp = remove.to_bitboard();
-			//remove the piece from that posn, must iterate through each team to find
-			//check white vector first
-			int size = white.size();
-			int found = false;
-			for (int i = 0; i < size; ++i) {
-				if (white[i].get_pos() == tmp) {
-					white.erase(i);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				size = black.size();
-				for (int i = 0; i < size; ++i) {
-					if (black[i].get_pos() == tmp) {
-						black.erase(i);
-						break;
-					}
-				}
-			}
-		} else if (s == "=") {
+			// see if it's replacing an already existing piece
+			bs.teams[0].remove_piece(tmp)
+				|| bs.teams[1].remove_piece(tmp);
 
-		} else if (s == "done") {
+			if (piece_char[0] < 'a') { //capital -> WHITE
+				bs.teams[0].emplace_back(Piece{tmp, empty, empty,
+						empty, type, Colour::WHITE});
+			} else { //lower ->BLACK {
+				bs.teams[1].emplace_back(Piece{tmp, empty, empty,
+						empty, type, Colour::BLACK});
+			}
+			std::cout << bs.print_board();
+		} else if (command == "-") {
+			std::get_line(std::cin, line);
+			std::stringstream ss(line);
+			ss >> posn;
+			if (posn.length() != 2)
+				continue;
+			col = convert_col(posn[0]);
+			if (col < 0)
+				continue;
+			row = std::stoi(posn[1]);
+			Posn remove{row - 1, col - 1};
+			tmp = remove.to_bitboard();
+			// try to remove from white first, then black 
+			bs.teams[0].remove_piece(tmp)
+				|| bs.teams[1].remove_piece(tmp);
+			std::cout << bs.print_board();
+		} else if (command == "=") {
+			std::get_line(std::cin, line);
+			std::stringstream ss(line);
+			std::string colour;
+			ss >> colour;
+			ss >> line;
+			if (line.length() != 0)
+				// ensures one command per line
+				continue;
+			Colour to_play;
+			if (colour == "white")
+				to_play = Colour::WHITE;
+			else if (colour == "black")
+				to_play = Colour::BLACK;
+			else
+				continue;
+			bs.set_colour(to_play);
+		} else if (command == "done") {
 			std::cout << "Leaving setup mode" << std::endl;
+			return;
 		} else { //invalid input 
 			std::cout << "Invalid input, try again." << std::endl;
 		}

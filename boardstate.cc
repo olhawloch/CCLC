@@ -45,27 +45,90 @@ std::string BoardState::print_board() const
 	return board;
 }
 
-Colour Boardstate::get_turn() const
+Colour BoardState::get_turn() const
 {
 	return turn;
 }
 
-Bitboard Boardstate::get_castling_rights(Colour team) const
+void BoardState::set_turn(Colour c)
 {
-//how are we holing the info in the string, Black or White, long or short or both
+	turn = c;
 }
 
-unsigned int Boardstate::get_half_turn() const
+Bitboard BoardState::get_castling_rights(Colour team) const
+{
+	char king_side = 'k';
+	char queen_side = 'q';
+	bool white = false;
+	if (team == Colour::WHITE) {
+		white = true;
+		king_side += 'A' - 'a';
+		queen_side += 'A' - 'a';
+	}
+
+	Bitboard tmp{0};
+
+	for (int i = 0; i < castling_rights.size(); ++i) {
+		if (castling_rights[i] == king_side) {
+			if (white) {
+				tmp |= WHITE_KS_CASTLE;
+			} else {
+				tmp |= BLACK_KS_CASTLE;
+			}
+		} else if (castling_rights[i] == queen_side) {
+			if (white) {
+				tmp |= WHITE_QS_CASTLE;
+			} else {
+				tmp |= BLACK_QS_CASTLE;
+			}
+		}
+	}
+
+	return tmp;
+}
+
+unsigned int BoardState::get_half_turn() const
 {
 	return half_turn;
 }
 
-unsigned int Boardstate::get_full_turn() const
+unsigned int BoardState::get_full_turn() const
 {
 	return full_turn;
 }
 
-Bitboard Boardstate::get_enpassane_sqr() const
+Bitboard BoardState::get_enpassant_sqr() const
 {
 	return enpassant_sqr;
+}
+
+void BoardState::calc_legal_moves()
+{
+	Team &attack = teams[0];
+	Team &defend = teams[1];
+
+	if (turn == Colour::BLACK) {
+		attack = teams[1];
+		defend = teams[0];
+	}
+
+	Bitboard attack_pos = attack.pos_pieces();
+	Bitboard defend_pos = defend.pos_pieces();
+
+	defend.calc_sudo_legal_moves(defend_pos, attack_pos, false);
+	defend.calc_one_deep_moves(defend_pos, attack_pos);
+
+	attack.calc_sudo_legal_moves(attack_pos, defend_pos, true);
+	
+	Bitboard attack_king_pos = attack.get_king_pos();
+
+	Piece *checking = defend.checking_piece(attack_king_pos);
+	bool double_check = defend.is_double_check(attack_king_pos);
+	Bitboard checking_line =
+		checking ? checking.line_to_king(attack_king_pos) : 0;
+
+	auto pinning = defend.get_pinning_lines(attack_king_pos);
+
+	attack.calc_legal_moves(attack_pos, defend_pos, checking, checking_line,
+			pinning, defend.get_sudo_legal_moves(), double_check);
 }
