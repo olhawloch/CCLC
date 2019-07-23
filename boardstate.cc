@@ -44,3 +44,28 @@ std::string BoardState::print_board() const
 	}
 	return board;
 }
+
+Colour Boardstate::get_turn() const
+{
+	return turn;
+}
+
+Bitboard Boardstate::get_castling_rights(Colour team) const
+{
+//how are we holing the info in the string, Black or White, long or short or both
+}
+
+unsigned int Boardstate::get_half_turn() const
+{
+	return half_turn;
+}
+
+unsigned int Boardstate::get_full_turn() const
+{
+	return full_turn;
+}
+
+Bitboard Boardstate::get_enpassane_sqr() const
+{
+	return enpassant_sqr;
+}

@@ -8,7 +8,7 @@
 
 class BoardState {
 	Colour turn;
-	std::String castling_rights;
+	std::string castling_rights;
 	unsigned int half_turn;
 	unsigned int full_turn;
 	Bitboard enpassant_sqr;
