@@ -8,13 +8,13 @@ bool Team::check(Bitboard enemies_atk) const
 			king = &piece;
 		}
 	}
-	return king.pos & enemies_atk;
+	return (king.pos & enemies_atk).any();
 }
 
 Piece *Team::checking_piece(const Bitboard enemy_king_pos) const
 {
 	for (auto &e : pieces) {
-		if (e.get_sudo_legal_moves() & enemy_king_pos)
+		if ((e.get_sudo_legal_moves() & enemy_king_pos).any())
 			return &e;
 	}
 	
@@ -30,7 +30,7 @@ bool Team::is_double_check(const Bitboard enemy_king_pos) const
 		tmp &= e.get_sudo_legal_moves();
 	}
 
-	return tmp & enemy_king_pos;
+	return (tmp & enemy_king_pos).any();
 }
 
 Bitboard Team::pos_pieces() const
@@ -46,8 +46,8 @@ std::vector<Bitboard> Team::get_pinning_lines(const Bitboard enemy_king_pos) con
 {
 	std::vector<Bitboard> lines;
 	for (auto &piece : pieces) {
-		if (!(piece.get_sudo_legal_moves() & enemy_king_pos)
-				&& piece.get_one_deep_moves() & enemy_king_pos) {
+		if ((piece.get_sudo_legal_moves() & enemy_king_pos).none()
+				&& (piece.get_one_deep_moves() & enemy_king_pos).any()) {
 			lines.emplace_back(piece.line_to_king(enemy_king_pos));
 		}
 	}
@@ -100,7 +100,7 @@ Bitboard Team::get_legal_moves() const
 
 bool Team::checkmate(const Bitboard enemies_atk) const
 {
-	return check(enemies_atk) && !get_legal_moves();
+	return check(enemies_atk) && get_legal_moves().none();
 }
 
 bool Team::move_piece(Move m)
@@ -159,7 +159,7 @@ bool Team::is_valid_move(Move m)
 		}
 	}
 
-	return p.get_legal_moves() & to; 
+	return (p.get_legal_moves() & to).any(); 
 }
 
 void add_piece(Piece p)
