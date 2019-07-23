@@ -30,6 +30,7 @@ class Team {
 	bool is_valid_move(Move m);
 	void add_piece(Piece p);
 	bool remove_piece(Bitboard pos);
+	std::string print_team() const;
 };
 
 #endif

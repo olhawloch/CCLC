@@ -178,3 +178,52 @@ bool remove_piece(Bitboard pos)
 	}
 	return false;
 }
+
+static Posn to_posn(const Bitboard &b)
+{
+	int index = to_string(b).find("1");
+	const int size = COL_SHIFT * COL_HEIGHT;
+	int actual_index = size - 1 - index;
+	int x = (actual_index % COL_SHIFT) - 1;
+	int y = (actual_index / COL_SHIFT) - 2;
+	return Posn{x, y};
+}
+
+std::string Team::print_team() const
+{
+	std::string board(64, " ");
+	int ascii_shift = 0;
+	char p;
+	if (colour == Colour::WHITE)
+		ascii_shift = 'A' - 'a';
+
+	for (auto piece : pieces) {
+		switch (piece.get_type()) {
+		case Type::PAWN:
+			p = 'p'; 
+			break;
+		case Type::ROOK:
+			p = 'r';
+			break;
+		case Type::KNIGHT:
+			p = 'n';
+			break;
+		case Type::BISHOP:
+			p = 'b';
+			break;
+		case Type::QUEEN:
+			p = 'q';
+			break;
+		case Type::KING:
+			p = 'k';
+			break;
+		default:
+			// type is empty, should never be the case 
+			assert(0);
+		}
+		p += ascii_shift;
+		Posn pos = to_posn(piece.get_pos());	
+		board[pos.y * (COL_SHIFT - 2) + pos.x] = p;
+	}
+	return board;
+}
