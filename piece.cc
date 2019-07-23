@@ -52,12 +52,11 @@ static Bitboard sudo_legal_pawn(const Piece &p, const Bitboard &friends,
 			slm |= p.pos << (COL_SHIFT - 1);
 			slm |= p.pos << (COL_SHIFT + 1);
 		}
-
 		if (pawn_move) {
 			// single move
 			tmp |= (p.pos << COL_SHIFT) & ~filled;
 			// double move
-			tmp |= (tmp && p.pos & WHITE_DOUBLE_ROW) ? 
+			tmp |= (tmp.any() && (p.pos & WHITE_DOUBLE_ROW).any()) ? 
 				(p.pos << 2 * COL_SHIFT) & ~filled : empty;
 			slm |= tmp;
 		}	
@@ -68,7 +67,7 @@ static Bitboard sudo_legal_pawn(const Piece &p, const Bitboard &friends,
 		}
 		if (pawn_move) {
 			tmp |= (p.pos >> COL_SHIFT) & ~filled;
-			tmp |= (tmp && p.pos & BLACK_DOUBLE_ROW) ? 
+			tmp |= (tmp.any() && (p.pos & BLACK_DOUBLE_ROW).any()) ? 
 				(p.pos >> 2 * COL_SHIFT) & ~filled : empty;
 			slm |= tmp;
 		}
@@ -87,12 +86,12 @@ static Bitboard sudo_legal_rook(const Piece &p, const Bitboard &friends,
 	int i = 1;
 	while(1) {
 		tmp = p.pos << (COL_SHIFT * i);
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -103,12 +102,12 @@ static Bitboard sudo_legal_rook(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while(1) {
 		tmp = p.pos >> (COL_SHIFT * i);
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -119,12 +118,12 @@ static Bitboard sudo_legal_rook(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while(1) {
 		tmp = p.pos << i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -135,12 +134,12 @@ static Bitboard sudo_legal_rook(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while(1) {
 		tmp = p.pos >> i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -176,12 +175,12 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	int i = 1;
 	while (1) {
 		tmp = p.pos << (COL_SHIFT * i) + i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -192,12 +191,12 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while (1) {
 		tmp = p.pos << (COL_SHIFT * i) - i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -208,12 +207,12 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while (1) {
 		tmp = p.pos >> (COL_SHIFT * i) + i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -224,12 +223,12 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	i = 1;
 	while (1) {
 		tmp = p.pos >> (COL_SHIFT * i) - i;
-		if (tmp & ~VALID_BOARD)
+		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
-		if (tmp & friends)
+		if ((tmp & friends).any())
 			break;
-		if (tmp & enemies)
+		if ((tmp & enemies).any())
 			++count;
 		if (count == depth)
 			break;
@@ -325,7 +324,7 @@ static Bitboard not_check_legal_pawn(Piece &p, Bitboard friends,
 	lm |= sudo_legal_pawn(p, friends, enemies, false, true);	
 
 	for (auto &line : pinning) {
-		if (line & p.pos)
+		if ((line & p.pos).any())
 			return lm & line;
 	}
 
@@ -349,7 +348,7 @@ static Bitboard not_check_legal_back_rank(Piece &p, Bitboard friends,
 	Bitboard lm = p.sudo_legal_moves & ~friends;
 
 	for (auto &line : pinning) {
-		if (line & p.pos)
+		if ((line & p.pos).any())
 			return lm & line;
 	}
 
@@ -375,9 +374,6 @@ static Bitboard check_legal_king(Piece &p, Piece &checking, Bitboard friends,
 		& ~checking.one_deep_moves;
 }
 
-/*
- * enemies are those that 
- */
 void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
 		Bitboard checking_line, const std::vector<Bitboard> &pinning,
 		Bitboard enemies_atk, bool double_check)
@@ -429,13 +425,13 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 
 	int i = 1;
 
-	if (p_pos < king_pos) {
+	if (less_than(p_pos, king_pos)) {
 		// check right
 		while(1) {
 			tmp = p_pos << i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				ltk = p_pos;
 				break;
 			ltk |= tmp;
@@ -445,9 +441,9 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos << (COL_SHIFT * i);
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				break;
 			ltk |= tmp;
 			++i;
@@ -457,9 +453,9 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos >> i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				ltk = p_pos;
 				break;
 			ltk |= tmp;
@@ -469,9 +465,9 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos >> (COL_SHIFT * i);
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				break;
 			ltk |= tmp;
 			++i;
@@ -488,13 +484,13 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 
 	int i = 1;
 
-	if (p_pos < king_pos) {
+	if (less_than(p_pos, king_pos)) {
 		// check up left 
 		while(1) {
 			tmp = p_pos << (COL_SHIFT * i) - i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				ltk = p_pos;
 				break;
 			ltk |= tmp;
@@ -504,9 +500,9 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos << (COL_SHIFT * i) + i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				break;
 			ltk |= tmp;
 			++i;
@@ -516,9 +512,9 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos >> (COL_SHIFT * i) + i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
+			if ((tmp & ~VALID_BOARD).any())
 				ltk = p_pos;
 				break;
 			ltk |= tmp;
@@ -528,10 +524,10 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		i = 1;
 		while(1) {
 			tmp = p_pos >> (COL_SHIFT * i) - i;
-			if (tmp & king_pos)
+			if ((tmp & king_pos).any())
 				return ltk;
-			if (tmp & ~VALID_BOARD)
-				assert(0);
+			if ((tmp & ~VALID_BOARD).any())
+				break;
 			ltk |= tmp;
 			++i;
 		}
