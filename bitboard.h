@@ -17,6 +17,8 @@ extern const int COL_HEIGHT;
 
 std::string print_bitboard(const Bitboard &b);
 
+bool less_than(const Bitboard &a, const Bitboard &b); 
+
 /* The valid board
 0000000000
 0000000000

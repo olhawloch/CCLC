@@ -18,6 +18,17 @@ const Bitboard WHITE_PAWN_PROMOTION(
 const Bitboard BLACK_PAWN_PROMOTION(
 	std::string("0000000000000000000000011111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
+bool less_than(const Bitboard &a, const Bitboard &b)
+{
+	for (int i = (COL_SHIFT * COL_HEIGHT) - 1; i >= 0; --i) {
+		if (a[i] < b[i])
+			return true;
+		if (a[i] > b[i])
+			return false;
+	}
+	return false;
+}
+
 /*
  * print_bitboard returns a string that displays a Bitboard that 
  * is COL_HEIGHTxCOL_SHIFT, with numbers along the left hand side 
