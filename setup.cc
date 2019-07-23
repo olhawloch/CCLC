@@ -3,55 +3,53 @@
 
 int convert_col(char letter)
 {	
-	switch (letter) {
-	case 'a':
-		return 1;
-	case 'b':
-		return 2;
-	case 'c':
-		return 3;
-	case 'd':
-		return 4;
-	case 'e':
-		return 5;
-	case 'f':
-		return 6;
-	case 'g':
-		return 7;
-	case 'h':
-		return 8;
-	default:
-		// not from a-h, should never be the case 
+	if ('a' > letter || letter > 'h')
+		// not valid
 		assert(0);
-	}
+	return letter - 'a' + 1;
 }
 
 Type convert_piece(char letter)
 {
+	Type t = Type::EMPTY;
+
 	switch (letter) {
-	case ('p' || 'P')
-		return Type::PAWN;
-	case ('r' || 'R')
-		return Type::ROOK;
-	case ('n' || 'N')
-		return Type::KNIGHT;
-	case ('b' || 'B') 
-		return Type::BISHOP;
-	case ('q' || 'Q') 
-		return Type::QUEEN;
-	case ('k' || 'K') 
-		return Type::KING;
+	case 'p':
+	case 'P':
+		t = Type::PAWN;
+		break;
+	case 'r':
+	case 'R':
+		t = Type::ROOK;
+		break;
+	case 'n':
+	case 'N':
+		t = Type::KNIGHT;
+		break;
+	case 'b':
+	case 'B':
+		t = Type::BISHOP;
+		break;
+	case 'q':
+	case 'Q':
+		t = Type::QUEEN;
+		break;
+	case 'k':
+	case 'K':
+		t = Type::KING;
+		break;
 	default:
 		// type is empty, should never be the case 
 		assert(0);
 	}
+	return t;
 }
 
 int main()
 {
 	// the two vectors that we are adding these pieces to
-	std::vector<Pieces> white;
-	std::vector<Pieces> black;
+	std::vector<Piece> white;
+	std::vector<Piece> black;
 
 	Team white{white, Colour::WHITE};
 	Team black{black, Colour::BLACK};
