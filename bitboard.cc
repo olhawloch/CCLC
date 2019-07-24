@@ -39,11 +39,14 @@ std::string print_bitboard(const Bitboard &b)
 {
 	std::string board_string = b.to_string();
 	std::string s = "";
-	for (int i = 0; i < 12; ++i) {
-		s += std::to_string(12 - i);
-		s += " ";
-		s += (12 - i < 10) ? " " : "";
-		for (int j = 9; j >= 0; --j) {
+	for (int i = 0; i < COL_HEIGHT; ++i) {
+		if (COL_HEIGHT - i < COL_HEIGHT - 1 && COL_HEIGHT - i > 2) {
+			s += std::to_string(COL_HEIGHT - 2  - i);
+		} else {
+			s += " ";
+		}
+		s += "  ";
+		for (int j = COL_SHIFT - 1; j >= 0; --j) {
 			s+= board_string[i * COL_SHIFT + j];
 		}
 		s += "\n";	
