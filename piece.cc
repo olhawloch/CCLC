@@ -447,11 +447,11 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
-				ltk = p_pos;
 				break;
 			ltk |= tmp;
 			++i;
 		}
+		ltk = p_pos;
 		// check up
 		i = 1;
 		while(1) {
@@ -471,11 +471,11 @@ static Bitboard line_to_king_rook(Bitboard p_pos, Bitboard king_pos)
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
-				ltk = p_pos;
 				break;
 			ltk |= tmp;
 			++i;
 		}
+		ltk = p_pos;
 		// check down 
 		i = 1;
 		while(1) {
@@ -506,11 +506,11 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
-				ltk = p_pos;
 				break;
 			ltk |= tmp;
 			++i;
 		}
+		ltk = p_pos;
 		// check up right
 		i = 1;
 		while(1) {
@@ -530,11 +530,11 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
-				ltk = p_pos;
 				break;
 			ltk |= tmp;
 			++i;
 		}
+		ltk = p_pos;
 		// check down right
 		i = 1;
 		while(1) {
