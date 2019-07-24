@@ -118,12 +118,13 @@ int main() {
 			cout << print_bitboard(line) << endl;
 		}
 		bool dc = b.is_double_check(w_king);
-		Piece *checking = b.checking_piece(w_king);
-		/*
-		Bitboard c_pos = checking ? checking->get_pos() : 0;
-		cout << "Checking pos\n" << print_bitboard(c_pos) << endl; 
-		*/
-		Bitboard cl = checking ? checking->line_to_king(w_king) : 0;
+		auto checking = b.checking_pieces(w_king);
+
+		Bitboard cl{0};
+		for (auto &piece : checking) {
+			cl |= piece.line_to_king(w_king);
+		}	
+		cout << print_bitboard(cl) << endl;
 
 		w.calc_legal_moves(w_posns, b_posns, checking, cl, lines,
 				b.get_sudo_legal_moves(), dc);

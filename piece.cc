@@ -380,16 +380,21 @@ static Bitboard not_check_legal_king(Piece &p, Bitboard friends,
 	return (p.get_sudo_legal_moves() & ~friends) & ~enemies_atk;
 }
 
-static Bitboard check_legal_king(Piece &p, Piece &checking, Bitboard friends,
-		Bitboard enemies_atk)
+static Bitboard check_legal_king(Piece &p, std::vector<Piece> checking,
+		Bitboard friends, Bitboard enemies_atk)
 {
+	Bitboard checking_one_deep_moves{0};
+	for (auto &piece : checking) {
+		checking_one_deep_moves |= piece.get_one_deep_moves();
+	}	
 	return not_check_legal_king(p, friends, enemies_atk)
-		& ~checking.get_one_deep_moves();
+		& ~checking_one_deep_moves;
 }
 
-void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
-		Bitboard checking_line, const std::vector<Bitboard> &pinning,
-		Bitboard enemies_atk, bool double_check)
+void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
+		std::vector<Piece> checking, Bitboard checking_line,
+		const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
+		bool double_check)
 {
 	// only king can move if in double check
 	if (type != Type::KING && double_check) {
@@ -399,9 +404,9 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking
 
 	switch (type) {
 	case Type::PAWN:
-		if (checking)
+		if (checking.size() != 0)
 			legal_moves = check_legal_pawn(*this, friends, enemies,
-					*checking, checking_line);
+					checking[0], checking_line);
 		else
 			legal_moves = not_check_legal_pawn(*this, friends, enemies,
 					pinning);
@@ -412,7 +417,7 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking
 	case Type::KNIGHT:
 	case Type::BISHOP:
 	case Type::QUEEN:
-		if (checking)
+		if (checking.size() != 0)
 			legal_moves = check_legal_back_rank(*this, friends,
 					checking_line);
 		else
@@ -420,8 +425,8 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking
 					pinning);
 		break;
 	case Type::KING:
-		if (checking)
-			legal_moves = check_legal_king(*this, *checking, friends,
+		if (checking.size() != 0)
+			legal_moves = check_legal_king(*this, checking, friends,
 					enemies_atk);
 		else
 			legal_moves = not_check_legal_king(*this, friends,
@@ -555,7 +560,7 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 // according to the piece's type, otherwise 0
 Bitboard Piece::line_to_king(const Bitboard king_pos)
 {
-	Bitboard ltk{0};
+	Bitboard ltk = pos;
 
 	switch (type) {
 	case Type::PAWN:

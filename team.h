@@ -13,7 +13,7 @@ class Team {
 	public:
 	explicit Team(Colour colour);
 	bool check(Bitboard enemies_atk) const;
-	Piece *checking_piece(const Bitboard enemy_king_pos);
+	std::vector<Piece> checking_pieces(const Bitboard enemy_king_pos);
 	bool is_double_check(const Bitboard enemy_king_pos) const;
 	Bitboard pos_pieces() const;
 	std::vector<Bitboard> get_pinning_lines(const Bitboard enemy_king_pos);
@@ -22,7 +22,7 @@ class Team {
 			bool pawn_move);
 	void calc_one_deep_moves(const Bitboard friends, const Bitboard enemies);
 	void calc_legal_moves(const Bitboard friends, const Bitboard enemies,
-			Piece *checking, Bitboard checking_line,
+			std::vector<Piece> checking, Bitboard checking_line,
 			const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
 			bool double_check);
 

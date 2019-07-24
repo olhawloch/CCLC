@@ -36,8 +36,8 @@ class Piece {
 			const Bitboard enemies, const bool pawn_move);
 	void calc_one_deep_moves(const Bitboard friends,
 			const Bitboard enemies);
-	void calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
-			Bitboard checking_line,
+	void calc_legal_moves(Bitboard friends, Bitboard enemies,
+			std::vector<Piece> checking, Bitboard checking_line,
 			const std::vector<Bitboard> &pinning,
 			Bitboard enemies_atk, bool double_check);
 	Bitboard line_to_king(const Bitboard king_pos);

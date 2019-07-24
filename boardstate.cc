@@ -122,10 +122,13 @@ void BoardState::calc_legal_moves()
 	
 	Bitboard attack_king_pos = attack.get_king_pos();
 
-	Piece *checking = defend.checking_piece(attack_king_pos);
+	std::vector<Piece> checking = defend.checking_pieces(attack_king_pos);
 	bool double_check = defend.is_double_check(attack_king_pos);
-	Bitboard checking_line =
-		checking ? checking.line_to_king(attack_king_pos) : 0;
+	Bitboard checking_line{0}; 
+
+	for (auto &piece : checking) {
+		checking_line |= checking.line_to_king(attack_king_pos);
+	}
 
 	auto pinning = defend.get_pinning_lines(attack_king_pos);
 

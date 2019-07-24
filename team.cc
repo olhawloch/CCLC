@@ -16,18 +16,23 @@ bool Team::check(Bitboard enemies_atk) const
 	return (king->get_pos() & enemies_atk).any();
 }
 
-Piece *Team::checking_piece(const Bitboard enemy_king_pos)
+std::vector<Piece> Team::checking_pieces(const Bitboard enemy_king_pos)
 {
+	std::vector<Piece> ret;
+
 	for (auto &e : pieces) {
 		if ((e.get_sudo_legal_moves() & enemy_king_pos).any())
-			return &e;
+			ret.emplace_back(e);
 	}
 	
-	return nullptr;
+	return ret;
 }
 
 bool Team::is_double_check(const Bitboard enemy_king_pos) const
 {
+	if (pieces.size() < 3)
+		// only a king or a king and another piece
+		return false;
 	Bitboard tmp{0};
 	tmp = ~tmp;
 
@@ -75,9 +80,10 @@ void Team::calc_one_deep_moves(const Bitboard friends, const Bitboard enemies)
 	}
 }
 
-void Team::calc_legal_moves(Bitboard friends, Bitboard enemies, Piece *checking,
-		Bitboard checking_line, const std::vector<Bitboard> &pinning,
-		Bitboard enemies_atk, bool double_check)
+void Team::calc_legal_moves(Bitboard friends, Bitboard enemies,
+		std::vector<Piece> checking, Bitboard checking_line,
+		const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
+		bool double_check)
 {
 	for (auto &piece : pieces) {
 		piece.calc_legal_moves(friends, enemies, checking, checking_line,
