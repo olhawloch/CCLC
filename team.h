@@ -11,11 +11,12 @@ class Team {
 	Colour colour;
 	
 	public:
+	explicit Team(Colour colour);
 	bool check(Bitboard enemies_atk) const;
-	Piece *checking_piece(const Bitboard enemy_king_pos) const;
+	Piece *checking_piece(const Bitboard enemy_king_pos);
 	bool is_double_check(const Bitboard enemy_king_pos) const;
 	Bitboard pos_pieces() const;
-	std::vector<Bitboard> get_pinning_lines(const Bitboard enemy_king_pos) const;
+	std::vector<Bitboard> get_pinning_lines(const Bitboard enemy_king_pos);
 
 	void calc_sudo_legal_moves(const Bitboard friends, const Bitboard enemies,
 			bool pawn_move);
