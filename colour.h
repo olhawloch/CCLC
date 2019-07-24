@@ -5,3 +5,4 @@ enum Colour {
 	WHITE,
 	BLACK
 };
+#endif

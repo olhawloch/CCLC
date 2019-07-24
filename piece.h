@@ -3,6 +3,8 @@
 
 #include "bitboard.h"
 #include "type.h"
+#include "colour.h"
+#include <vector>
 
 class Piece {
 	// a single 1 at the position where the piece is
@@ -20,6 +22,8 @@ class Piece {
 	Colour team;
 	
 	public:
+	Piece(Bitboard pos, Type t, Colour c);
+
 	Bitboard get_pos() const;
 	Type get_type() const;
 	Colour get_team() const;
