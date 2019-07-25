@@ -114,20 +114,27 @@ void setup(BoardState &bs)
 			std::getline(std::cin, line);
 			std::stringstream ss(line);
 			std::string colour;
+			std::string garbage;
 			ss >> colour;
-			ss >> line;
-			if (line.length() != 0)
+			std::cout << colour << std::endl;
+			ss >> garbage;
+			std::cout << garbage << std::endl;
+			if (garbage.length() != 0)
 				// ensures one command per line
 				continue;
 			Colour to_play;
-			if (colour == "white")
+			if (colour == "white") {
+				std::cout << "white is set to play first" << std::endl;
 				to_play = Colour::WHITE;
-			else if (colour == "black")
+			} else if (colour == "black") {
+				std::cout << "black is set to play first" << std::endl;
 				to_play = Colour::BLACK;
-			else
+			} else {
 				continue;
+			}
 			bs.set_turn(to_play);
 		} else if (command == "done") {
+			/*
 			if (w_king == 1 && b_king == 1) {
 				// check no pawns on first or last row
 				// check neither king is in check
@@ -136,6 +143,8 @@ void setup(BoardState &bs)
 			} else {
 				std::cout << "Please ensure both teams have 1 king on the board" << std::endl;
 			}
+			*/
+			return;
 		} else { //invalid input 
 			std::cout << "Invalid input, try again." << std::endl;
 		}

@@ -122,13 +122,8 @@ Bitboard BoardState::get_enpassant_sqr() const
 
 void BoardState::calc_legal_moves()
 {
-	Team &attack = teams[0];
-	Team &defend = teams[1];
-
-	if (turn == Colour::BLACK) {
-		attack = teams[1];
-		defend = teams[0];
-	}
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 
 	Bitboard attack_pos = attack.pos_pieces();
 	Bitboard defend_pos = defend.pos_pieces();
