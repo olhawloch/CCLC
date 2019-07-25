@@ -1,7 +1,7 @@
 #ifndef _BOARDSTATE_H_
 #define _BOARDSTATE_H_
 
-#include "piece.h"
+#include "team.h"
 #include "colour.h"
 #include <string.h>
 #include <vector>
@@ -15,6 +15,8 @@ class BoardState {
 
 public:
 	std::vector<Team> teams;
+
+	BoardState();
 
 	std::string print_board() const;
 	Colour get_turn() const;

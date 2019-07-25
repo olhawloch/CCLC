@@ -1,48 +1,66 @@
 #include "boardstate.h"
+#include <iostream>
+
+BoardState::BoardState() : turn{Colour::WHITE}, castling_rights{""}, half_turn{0},
+			full_turn{0}, enpassant_sqr{0}
+			{
+				teams.emplace_back(Team{Colour::WHITE});
+				teams.emplace_back(Team{Colour::BLACK});
+			}
 
 std::string BoardState::print_board() const
 {
-	std::string board;
 	int size = 64;
+	int width = COL_SHIFT - 2;
+	std::string board;
+	board.reserve(size);
 	// empty board
 	bool white_sqr = false;
 	for (int i = 0; i < size; ++i) {
 		if (white_sqr) {
-			board[i] = " ";
-			white_sqr = false;
+			board[i] = ' ';
+			if (!(i % width == 7)) {
+				white_sqr = false;	
+			}
 		} else {
-			board[i] = "-";
-			white_sqr = true;
+			board[i] = '-';
+			if (!(i % width == 7)) {
+				white_sqr = true;
+			}
 		}
 	}
-
 	for (auto &team : teams) {
 		std::string pieces = team.print_team();
 		for (int i = 0; i < size; ++i) {
-			if (pieces[i] != " ") {
+			if (pieces[i] != ' ') {
 				//since only one piece/sqr, no team overlaps
 				board[i] = pieces[i];
 			}
 		}
 	}
-
-	const int width = COL_SHIFT - 2;
-
+	
 	char tmp;
 	// flip horizontally, so black is on top
 	for (int i = 0; i < width / 2; ++i) {
-		for (int j = 0; i < width; ++i) {
-			board[i * width + j] = tmp;
-			board[i * width + j] = board[(1 - i) * width - 1 + j];
-			board[(1 - i) * width - 1 + j] = tmp;
+		for (int j = 0; j < width; ++j) {
+			std::swap(board[(i * width) + j], board[width * (width - 1 - i) + j]);
 		}
 	}
-	// adds row numbers and newlines
-	for (int i = 0; i < width; ++i) {
-		board.insert(i * width, to_string(width - i - 1) + " ");
-		board.insert((i * width) + width, "\n") 
+
+	std::string final_board;
+	for (int i = 0; i < size; ++i) {
+		if (i % width == 0) {
+			if (i != 0)
+				final_board += '\n';
+			final_board += std::to_string(width - (i / width));
+			final_board += " ";
+		}
+		final_board += board[i];
 	}
-	return board;
+
+	final_board += "\n  abcdefgh\n";
+
+	return final_board;
 }
 
 Colour BoardState::get_turn() const
@@ -127,7 +145,7 @@ void BoardState::calc_legal_moves()
 	Bitboard checking_line{0}; 
 
 	for (auto &piece : checking) {
-		checking_line |= checking.line_to_king(attack_king_pos);
+		checking_line |= piece.line_to_king(attack_king_pos);
 	}
 
 	auto pinning = defend.get_pinning_lines(attack_king_pos);

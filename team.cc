@@ -1,5 +1,6 @@
 #include "team.h"
 #include <cassert>
+#include <iostream>
 
 Team::Team(Colour colour) : colour{colour}
 {
@@ -195,8 +196,8 @@ static Posn to_posn(const Bitboard &b)
 	int index = b.to_string().find("1");
 	const int size = COL_SHIFT * COL_HEIGHT;
 	int actual_index = size - 1 - index;
-	int x = (actual_index % COL_SHIFT) - 1;
-	int y = (actual_index / COL_SHIFT) - 2;
+	int y = (actual_index % COL_SHIFT) - 1;
+	int x = (actual_index / COL_SHIFT) - 2;
 	return Posn{x, y};
 }
 
@@ -233,7 +234,7 @@ std::string Team::print_team() const
 			assert(0);
 		}
 		p += ascii_shift;
-		Posn pos = to_posn(piece.get_pos());	
+		Posn pos = to_posn(piece.get_pos());
 		board[pos.y * (COL_SHIFT - 2) + pos.x] = p;
 	}
 	return board;

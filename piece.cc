@@ -161,14 +161,14 @@ static Bitboard sudo_legal_knight(const Piece &p)
 	Bitboard slm{0};
 	const Bitboard pos = p.get_pos();
 
-	slm |= pos << COL_SHIFT + 2;
-	slm |= pos << (2 * COL_SHIFT) + 1;
-	slm |= pos << COL_SHIFT - 2;
-	slm |= pos << (2 * COL_SHIFT) - 1;
-	slm |= pos >> COL_SHIFT + 2;
-	slm |= pos >> (2 * COL_SHIFT) + 1;
-	slm |= pos >> COL_SHIFT - 2;
-	slm |= pos >> (2 * COL_SHIFT) - 1;
+	slm |= pos << (COL_SHIFT + 2);
+	slm |= pos << ((2 * COL_SHIFT) + 1);
+	slm |= pos << (COL_SHIFT - 2);
+	slm |= pos << ((2 * COL_SHIFT) - 1);
+	slm |= pos >> (COL_SHIFT + 2);
+	slm |= pos >> ((2 * COL_SHIFT) + 1);
+	slm |= pos >> (COL_SHIFT - 2);
+	slm |= pos >> ((2 * COL_SHIFT) - 1);
 
 	return slm & VALID_BOARD;
 }
@@ -183,7 +183,7 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	unsigned int count = 0;
 	int i = 1;
 	while (1) {
-		tmp = pos << (COL_SHIFT * i) + i;
+		tmp = pos << ((COL_SHIFT * i) + i);
 		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
@@ -199,7 +199,7 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	count = 0;
 	i = 1;
 	while (1) {
-		tmp = pos << (COL_SHIFT * i) - i;
+		tmp = pos << ((COL_SHIFT * i) - i);
 		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
@@ -215,7 +215,7 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	count = 0;
 	i = 1;
 	while (1) {
-		tmp = pos >> (COL_SHIFT * i) + i;
+		tmp = pos >> ((COL_SHIFT * i) + i);
 		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
@@ -231,7 +231,7 @@ static Bitboard sudo_legal_bishop(const Piece &p, const Bitboard &friends,
 	count = 0;
 	i = 1;
 	while (1) {
-		tmp = pos >> (COL_SHIFT * i) - i;
+		tmp = pos >> ((COL_SHIFT * i) - i);
 		if ((tmp & ~VALID_BOARD).any())
 			break;
 		slm |= tmp;
@@ -259,12 +259,12 @@ static Bitboard sudo_legal_king(const Piece &p)
 	Bitboard slm{0};
 	const Bitboard pos = p.get_pos();
 
-	slm |= pos >> COL_SHIFT;
-	slm |= pos << COL_SHIFT;
-	slm |= pos >> COL_SHIFT + 1;
-	slm |= pos << COL_SHIFT + 1;
-	slm |= pos >> COL_SHIFT - 1;
-	slm |= pos << COL_SHIFT - 1;
+	slm |= pos >> (COL_SHIFT);
+	slm |= pos << (COL_SHIFT);
+	slm |= pos >> (COL_SHIFT + 1);
+	slm |= pos << (COL_SHIFT + 1);
+	slm |= pos >> (COL_SHIFT - 1);
+	slm |= pos << (COL_SHIFT - 1);
 	slm |= pos >> 1;
 	slm |= pos << 1;
 
@@ -523,7 +523,7 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 	if (less_than(p_pos, king_pos)) {
 		// check up left 
 		while(1) {
-			tmp = p_pos << (COL_SHIFT * i) - i;
+			tmp = p_pos << ((COL_SHIFT * i) - i);
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
@@ -535,7 +535,7 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		// check up right
 		i = 1;
 		while(1) {
-			tmp = p_pos << (COL_SHIFT * i) + i;
+			tmp = p_pos << ((COL_SHIFT * i) + i);
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
@@ -547,7 +547,7 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		// check down left 
 		i = 1;
 		while(1) {
-			tmp = p_pos >> (COL_SHIFT * i) + i;
+			tmp = p_pos >> ((COL_SHIFT * i) + i);
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
@@ -559,7 +559,7 @@ static Bitboard line_to_king_bishop(Bitboard p_pos, Bitboard king_pos)
 		// check down right
 		i = 1;
 		while(1) {
-			tmp = p_pos >> (COL_SHIFT * i) - i;
+			tmp = p_pos >> ((COL_SHIFT * i) - i);
 			if ((tmp & king_pos).any())
 				return ltk;
 			if ((tmp & ~VALID_BOARD).any())
