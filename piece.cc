@@ -344,12 +344,20 @@ static Bitboard not_check_legal_pawn(Piece &p, Bitboard friends,
 }
 
 static Bitboard check_legal_pawn(Piece &p, Bitboard friends, Bitboard enemies,
-		Piece &checking, Bitboard checking_line)
+		Piece &checking, Bitboard checking_line,
+		const std::vector<Bitboard> &pinning)
 {
+	const Bitboard pos = p.get_pos();
+
 	Bitboard lm = sudo_legal_pawn(p, friends, enemies, true, false)
 		& checking.get_pos();
 	lm |= sudo_legal_pawn(p, friends, enemies, false, true)
 		& (checking_line & ~checking.get_pos());
+
+	for (auto &line : pinning) {
+		if ((line & pos).any())
+			return lm & line;
+	}
 	
 	return lm;
 }
@@ -369,9 +377,17 @@ static Bitboard not_check_legal_back_rank(Piece &p, Bitboard friends,
 }
 
 static Bitboard check_legal_back_rank(Piece &p, Bitboard friends,
-		Bitboard checking_line)
+		Bitboard checking_line, const std::vector<Bitboard> &pinning)
 {
-	return (p.get_sudo_legal_moves() & ~friends) & checking_line;
+	const Bitboard pos = p.get_pos();
+	Bitboard lm = (p.get_sudo_legal_moves() & ~friends) & checking_line;
+
+	for (auto &line : pinning) {
+		if ((line & pos).any())
+			return lm & line;
+	}
+
+	return lm;
 }
 
 static Bitboard not_check_legal_king(Piece &p, Bitboard friends,
@@ -406,7 +422,7 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
 	case Type::PAWN:
 		if (checking.size() != 0)
 			legal_moves = check_legal_pawn(*this, friends, enemies,
-					checking[0], checking_line);
+					checking[0], checking_line, pinning);
 		else
 			legal_moves = not_check_legal_pawn(*this, friends, enemies,
 					pinning);
@@ -419,7 +435,7 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
 	case Type::QUEEN:
 		if (checking.size() != 0)
 			legal_moves = check_legal_back_rank(*this, friends,
-					checking_line);
+					checking_line, pinning);
 		else
 			legal_moves = not_check_legal_back_rank(*this, friends,
 					pinning);

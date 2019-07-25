@@ -134,39 +134,6 @@ int main() {
 		cout << ret << " checkmate" << endl;
 
 		break;
-		/*
-		cout << "from_x from_y to_x to_y" << endl;
-		getline(cin, line);
-		if (cin.fail())
-			break;
-		stringstream ss(line);
-
-		int x;
-		int y;
-
-		ss >> x;
-		ss >> y;
-
-		Posn from{x, y};
-		
-		ss >> x;
-		ss >> y;
-
-		Posn to{x, y};
-
-		Move m{to, from, Type::EMPTY};
-
-		bool success = t.move_piece(m);
-		if (success) {
-			cout << "Move successful" << endl;
-		} else {
-			cout << "Move unsucessful" << endl;
-		}
-
-		team_posns = t.pos_pieces();
-
-		cout << print_bitboard(team_posns) << endl;
-		*/
 	}
 
 }
