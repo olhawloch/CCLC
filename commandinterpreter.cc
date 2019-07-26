@@ -46,28 +46,28 @@ static int convert_col(char letter)
 	if ('a' > letter || letter > 'h')
 		// not valid
 		return -1;
-	return letter - 'a' + 1;
+	return letter - 'a';
 }
 
 static bool is_valid_default(std::string s)
 {
-	stringstream ss(s);
+	std::stringstream ss(s);
 	std::string from;
 	std::string to;
 
 	ss >> from;
-	if (tmp.length() != 2)
+	if (from.length() != 2)
 		return false;
-	if (convert_col(tmp[0]) < 0)
+	if (convert_col(from[0]) < 0)
 		return false;
-	if (tmp[1] < '1' || tmp[1] > '8')
+	if (from[1] < '1' || from[1] > '8')
 		return false;
 	ss >> to;
-	if (tmp.length() != 2)
+	if (to.length() != 2)
 		return false;
-	if (convert_col(tmp[0]) < 0)
+	if (convert_col(to[0]) < 0)
 		return false;
-	if (tmp[1] < '1' || tmp[1] > '8')
+	if (to[1] < '1' || to[1] > '8')
 		return false;
 
 	return true;
@@ -79,12 +79,16 @@ static Move interpret_default(std::string s)
 	int x;
 	int y;
 	Type promotion;
-	Posn to;
-	stringstream ss(s);
+	std::stringstream ss(s);
+	std::string tmp;
 
-	ss >> x >> y;
+	ss >> tmp;
+	x = convert_col(tmp[0]);
+	y = tmp[1] - '1';
 	Posn from{x, y};
-	ss >> x >> y;
+	ss >> tmp;
+	x = convert_col(tmp[0]);
+	y = tmp[1] - '1';
 	Posn to{x, y};
 	std::string promot;
 	ss >> promot;
@@ -96,15 +100,29 @@ static Move interpret_default(std::string s)
 	return Move{to, from, promotion};
 }
 
+bool CommandInterpreter::is_valid_notation(std::string s)
+{
+	bool ret;
+
+	if (syntax == Notation::DEFAULT) {
+		ret = is_valid_default(s);
+	} else if (syntax == Notation::ALGEBRAIC) {
+		assert(0);
+		//ret = is_valid_algebraic(s);
+	}
+
+	return ret;
+}
+
 Move CommandInterpreter::interpret_move(std::string s)
 {
 	Move ret;
 
 	if (syntax == Notation::DEFAULT) {
 		ret = interpret_default(s);
-	} else if (syntax == Notatation::ALGEBRAIC) {
+	} else if (syntax == Notation::ALGEBRAIC) {
 		assert(0);
-		ret = interpret_algebraic(s);
+		//ret = interpret_algebraic(s);
 	}
 
 	return ret;

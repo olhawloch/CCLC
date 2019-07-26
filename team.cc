@@ -244,7 +244,6 @@ std::string Team::print_team() const
 Bitboard Team::get_king_pos() const
 {
 	Bitboard k_pos{0};
-	const Piece *king = nullptr;
 	for (auto &piece : pieces) {
 		if (piece.get_type() == Type::KING) {
 			k_pos |= piece.get_pos();

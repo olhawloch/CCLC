@@ -1,6 +1,12 @@
+#ifndef _LEVEL1_H_
+#define _LEVEL1_H_
+
 #include "strategy.h"
 
-class level1 : public strategy {
+class Level1: public Strategy {
 	public:
-		Move choose_move(BoardState bs) override;
+	~Level1() override;
+	Move choose_move(BoardState &bs) override;
 };
+
+#endif

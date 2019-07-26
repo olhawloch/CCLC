@@ -1,9 +1,9 @@
 #ifndef _NOTATION_H_
 #define _NOTATION_H_
 
-enum Notatation {
+enum Notation {
 	DEFAULT,
-	ALGEBRIAC
+	ALGEBRAIC
 };
 
 #endif

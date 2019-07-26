@@ -7,12 +7,15 @@
 #include "piece.h"
 #include "team.h"
 #include "boardstate.h" 
+#include "commandinterpreter.h"
+#include "player.h"
 
 using namespace std;
 
 int convert_col(char letter);
 Type convert_piece(char letter);
 void setup(BoardState &bs);
+int play_game(BoardState &bs, Player &one, Player &two);
 
 
 int main()
@@ -21,104 +24,42 @@ int main()
 
 	string command;
 	string line;
-	
-	string from;
-	string to;
-	int row;
-	int col;
-	string promotion;
+
+	Player one{Colour::WHITE};
+	Player two{Colour::BLACK};
 
 	while(1) {
-		//this is where the board is setup, or if command is not setup,
-		//a default is created
-		cout << "enter: play or setup" << endl;
+		cout << "enter: game or setup" << endl;
+
+		cin >> command;
+		if (cin.fail())
+			break;
 		getline(cin, line);
-
 		stringstream ss{line};
-
-		ss >> command;
 
 		if (command == "setup") {
 			setup(bs);
 		} else if (command == "game") {
-			// setup default board
-			// only setup as of right now
-			cout << "This isn't functioning yet and will take you to play with nothing" << endl;
-		} else {
-			cout << "Incorrect input, play or setup" << endl;
-		}
-		break;
-	}
-	
-	while(1) {
-		//this is where the game is played
-		bs.calc_legal_moves();
-		if (bs.checkmate()) {
-			string winner = (bs.get_turn() == Colour::WHITE) 
-				? "Black" : "White";
-			cout << winner << " wins!" << endl;
-			break;
-		} else if (bs.stalemate()) {
-			cout << "Tie!" << endl;
-			break;
-		}
-
-		cout << "Begin playing: move from to or resign" << endl;
-		cin >> command;
-		if (cin.fail())
-			break;
-
-		getline(cin, line);
-		stringstream ss{line};
-
-		if (command == "move") {
-			ss >> from;
-			if (from.length() != 2)
-				continue;
-			ss >> to;
-			if (to.length() != 2)
-				continue;
-
-			col = convert_col(from[0]);
-			row = from[1] - '0';
-			Posn f{col - 1, row - 1};
-			col = convert_col(to[0]);
-			row = to[1] - '0';
-			Posn t{col - 1, row - 1};
-
-			ss >> promotion;
-
-			if (promotion.length() > 1) // should be 0 or 1
-				continue;
-
-			Type piece_type = convert_piece(promotion[0]);
-
-			Move m{t, f, piece_type};
-
-			if (bs.get_turn() == Colour::WHITE) {
-				cout << "we in here" << endl;
-				if (bs.teams[0].is_valid_move(m)) {
-					bs.move(m);
-					bs.set_turn(Colour::BLACK);
-				} else {
-					cout << "Invalid move, white try again" << endl;
-				}
+			ss >> command;
+			if (command == "human" || command == "computer1") {
+				one.set_strategy(command);
 			} else {
-				if (bs.teams[1].is_valid_move(m)) {
-					bs.move(m);
-					bs.set_turn(Colour::WHITE);
-				} else {
-					cout << "Invalid move, black try again" << endl;
-				}
+				cout << "Incorrect input" << endl;
 			}
-			cout << bs.print_board() << endl;
-		} else if (command == "resign") {
-			cout << "game ended" << endl;
-			break;
+			ss >> command;
+			if (command == "human" || command == "computer1") {
+				two.set_strategy(command);
+				play_game(bs, one, two);
+			} else {
+				cout << "Incorrect input" << endl;
+			}
 		} else {
-			cout << "Incorrect input, please try again" << endl;
+			cout << "Incorrect input" << endl;
 		}
 	}
+
+	cout << one.score << "-" << two.score << endl;
+	return 0;
 }
 
 // returns negative if letter is not valid
@@ -290,4 +231,65 @@ void setup(BoardState &bs)
 			std::cout << "Invalid input, try again." << std::endl;
 		}
 	}
+}
+
+int play_game(BoardState &bs, Player &one, Player &two)
+{
+	string command;
+
+	while(1) {
+		bs.calc_legal_moves();
+
+		if (bs.checkmate()) {
+			string winner = (bs.get_turn() == Colour::WHITE) 
+				? "Black" : "White";
+			cout << winner << " wins!" << endl;
+			if (winner == "White")
+				one.score += 1;
+			else 
+				two.score += 1;
+			return 0;
+		} else if (bs.stalemate()) {
+			cout << "Tie!" << endl;
+			one.score += 0.5;
+			two.score += 0.5;
+			return 1;
+		}
+
+		while(1) {
+			string to_play = (bs.get_turn() == Colour::WHITE) 
+				? "White" : "Black";
+			cout << to_play << "'s turn, enter: move from to or resign" << endl;
+			cin >> command;
+			
+			if (cin.fail())
+				return -1;
+
+			if (command == "move") {
+				Player &attack = (bs.get_turn() == Colour::WHITE)
+					? one : two;
+
+				Move new_move = attack.strat->choose_move(bs);
+				bs.move(new_move);
+				cout << bs.print_board();
+				Colour next_turn = (bs.get_turn() == Colour::WHITE)
+					? Colour::BLACK : Colour::WHITE;
+				bs.set_turn(next_turn);
+				break;
+			} if (command == "resign") { 
+				string winner = (bs.get_turn() == Colour::WHITE)
+					? "Black" : "White";
+				cout << winner << " wins!" << endl;
+				if (winner == "White")
+					one.score += 1;
+				else 
+					two.score += 1;
+				return 0;
+			} else {
+				cout << "Incorrect input, try again" << endl;
+			}
+			
+		}
+	}
+	return 0;
 }

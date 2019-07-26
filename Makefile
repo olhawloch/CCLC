@@ -2,7 +2,7 @@ CXX = g++					# compiler
 CXXFLAGS = -g -Wall -MMD -std=c++14		# compiler flags
 MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}	# makefile name
 
-OBJECTS = bitboard.o piece.o team.o boardstate.o main.o			# object files forming executable
+OBJECTS = bitboard.o piece.o team.o player.o boardstate.o commandinterpreter.o strategy.o level1.o main.o			# object files forming executable
 DEPENDS = ${OBJECTS:.o=.d}			# substitute ".o" with ".d"
 EXEC = chess.out				# executable name
 

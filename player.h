@@ -4,18 +4,20 @@
 #include "colour.h"
 #include "strategy.h"
 #include "level1.h"
-#include "level2.h"
-#include "level3.h"
-#include "level4.h"
 #include <string>
+#include <memory>
 
 class Player {
-	public:
 	Colour team;
-	std::unique_ptr<Strategy> strat;
-	string name; // will keep this empty as of right now
+	std::string name; // will keep this empty as of right now
 
-	Player(Colour c, std::string strat);
+	public:
+	float score = 0;
+	Strategy *strat;
+
+	explicit Player(Colour c);
+	~Player();
+	void set_strategy(std::string strat);
 };
 
 #endif

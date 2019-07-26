@@ -1,16 +1,24 @@
 #include "player.h"
 
-Player::Player(Colour c, std::string strat) : team{c}, name{""}
+Player::Player(Colour c): team{c}, name{""}, strat{nullptr}
 {
-	if (s == "human") {
-		strat = std::make_unique<Strategy>();
-	} else if (s == "computer1") {
-		strat = std::make_unique<Level1>();
-	} else if (s == "computer2") {
-		strat = std::make_unique<Level2>();
-	} else if (s == "computer3") {
-		strat = std::make_unique<Level3>();
+}
+
+Player::~Player() {
+	delete strat;
+}
+
+void Player::set_strategy(std::string strategy)
+{
+	if (strategy == "human") {
+		strat = new Strategy{};
+	} else if (strategy == "computer1") {
+		strat = new Level1{};
+	} else if (strategy == "computer2") {
+		//strat = std::make_unique<Strategy>(new Level2());
+	} else if (strategy == "computer3") {
+		//strat = std::make_unique<Strategy>(new Level3());
 	} else { // if (s == "computer4") {
-		strat = std::make_unique<Level4>();
+		//strat = std::make_unique<Strategy>(new Level4());
 	}
 }

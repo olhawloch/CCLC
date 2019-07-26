@@ -39,7 +39,6 @@ std::string BoardState::print_board() const
 		}
 	}
 	
-	char tmp;
 	// flip horizontally, so black is on top
 	for (int i = 0; i < width / 2; ++i) {
 		for (int j = 0; j < width; ++j) {
@@ -163,7 +162,7 @@ bool BoardState::move(Move m)
 	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 
 	bool captured = defend.remove_piece((m.to).to_bitboard());
-	bool success = attack.move_piece(m);
+	attack.move_piece(m);
 
 	return captured;
 }
