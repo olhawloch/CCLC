@@ -163,8 +163,21 @@ bool BoardState::move(Move m)
 	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 
 	bool captured = defend.remove_piece((m.to).to_bitboard());
-
 	bool success = attack.move_piece(m);
 
 	return captured;
+}
+
+bool BoardState::checkmate()
+{
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
+	return attack.checkmate(defend.get_sudo_legal_moves());
+}
+
+bool BoardState::stalemate()
+{
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	// it's stalemate if the attacking side has no moves
+	return !(attack.get_legal_moves().any());
 }

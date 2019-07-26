@@ -252,3 +252,23 @@ Bitboard Team::get_king_pos() const
 	}
 	return k_pos;
 }
+
+std::vector<Move> Team::get_moves() const
+{
+	std::vector<Move> moves;
+	Bitboard tmp{0};
+
+	for (auto &piece : pieces) {
+		Bitboard lm = piece.get_legal_moves();
+		Posn pos = to_posn(piece.get_pos());
+		for (int i = 0; i < COL_WIDTH * COL_HEIGHT; ++i) {
+			if (lm[i] == 1) {
+				tmp = 0;
+				tmp[i] = 1;
+				moves.emplace_back(Move{to_posn(tmp), pos, Type::EMPTY});
+			}
+		}
+	}
+
+	return moves;
+}

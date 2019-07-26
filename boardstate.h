@@ -28,6 +28,9 @@ public:
 	void calc_sudo_legal_moves();
 	void calc_legal_moves();
 	bool move(Move m);
+	bool checkmate();
+	// call only after ensuring it's not checkmate
+	bool stalemate();
 };
 
 #endif
