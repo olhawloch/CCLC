@@ -26,6 +26,7 @@ public:
 	unsigned int get_full_turn() const;
 	Bitboard get_enpassant_sqr() const;
 	void calc_legal_moves();
+	bool move(Move m);
 };
 
 #endif

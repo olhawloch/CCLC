@@ -138,6 +138,13 @@ bool Team::move_piece(Move m)
 
 bool Team::is_valid_move(Move m)
 {
+
+	std::cout << "WHITE_PROMOTION" << std::endl;
+	std::cout << print_bitboard(WHITE_PROMOTION) << std::endl;
+
+	std::cout << "BLACK_PROMOTION" << std::endl;
+	std::cout << print_bitboard(BLACK_PROMOTION) << std::endl;
+
 	Bitboard from = m.from.to_bitboard();
 	Bitboard to = m.to.to_bitboard();
 	Piece *p = nullptr;
@@ -156,16 +163,20 @@ bool Team::is_valid_move(Move m)
 		return false;
 
 	if (p->get_type() == Type::PAWN) {
-	        if (m.promotion != Type::EMPTY) {
+		if (m.promotion != Type::EMPTY) {
 			if (p->get_team() == Colour::WHITE) {
+				std::cout << "Type is pawn colour is white and non-empty promotion" << std::endl;
 				to &= WHITE_PROMOTION;
 			} else {
+				std::cout << "Type is pawn colour is black and non-empty promotion" << std::endl;
 				to &= BLACK_PROMOTION;
 			}
 		} else {
 			if (p->get_team() == Colour::WHITE) {
+				std::cout << "Type is pawn colour is white and empty promotion" << std::endl;
 				to &= ~WHITE_PROMOTION;
 			} else {
+				std::cout << "Type is pawn colour is black and empty promotion" << std::endl;
 				to &= ~BLACK_PROMOTION;
 			}
 		}

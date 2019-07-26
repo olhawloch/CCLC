@@ -148,3 +148,15 @@ void BoardState::calc_legal_moves()
 	attack.calc_legal_moves(attack_pos, defend_pos, checking, checking_line,
 			pinning, defend.get_sudo_legal_moves(), double_check);
 }
+
+bool BoardState::move(Move m)
+{
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
+
+	bool captured = defend.remove_piece((m.to).to_bitboard());
+
+	bool success = attack.move_piece(m);
+
+	return captured;
+}

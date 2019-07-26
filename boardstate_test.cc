@@ -83,14 +83,14 @@ int main()
 			if (bs.get_turn() == Colour::WHITE) {
 				cout << "we in here" << endl;
 				if (bs.teams[0].is_valid_move(m)) {
-					bs.teams[0].move_piece(m);
+					bs.move(m);
 					bs.set_turn(Colour::BLACK);
 				} else {
 					cout << "Invalid move, white try again" << endl;
 				}
 			} else {
 				if (bs.teams[1].is_valid_move(m)) {
-					bs.teams[1].move_piece(m);
+					bs.move(m);
 					bs.set_turn(Colour::WHITE);
 				} else {
 					cout << "Invalid move, black try again" << endl;
