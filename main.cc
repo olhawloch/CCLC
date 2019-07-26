@@ -31,7 +31,7 @@ int main()
 	while(1) {
 		//this is where the board is setup, or if command is not setup,
 		//a default is created
-		cout << "play or setup" << endl;
+		cout << "enter: play or setup" << endl;
 		getline(cin, line);
 
 		stringstream ss{line};
@@ -176,9 +176,6 @@ void setup(BoardState &bs)
 	std::string posn;
 	int row;
 	int col;
-
-	int w_king = 0;
-	int b_king = 0;
 
 	//this can only happen if we are not currently in the middle of a game
 	while (1) {

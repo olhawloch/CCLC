@@ -11,11 +11,11 @@
 
 class Player {
 	public:
-		Colour team;
-		std::unique_ptr<Strategy> strat;
-		string name; // will keep this empty as of right now
+	Colour team;
+	std::unique_ptr<Strategy> strat;
+	string name; // will keep this empty as of right now
 
-		Player(Colour c, std::string strat);
+	Player(Colour c, std::string strat);
 };
 
 #endif

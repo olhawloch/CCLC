@@ -261,7 +261,7 @@ std::vector<Move> Team::get_moves() const
 	for (auto &piece : pieces) {
 		Bitboard lm = piece.get_legal_moves();
 		Posn pos = to_posn(piece.get_pos());
-		for (int i = 0; i < COL_WIDTH * COL_HEIGHT; ++i) {
+		for (int i = 0; i < COL_SHIFT * COL_HEIGHT; ++i) {
 			if (lm[i] == 1) {
 				tmp = 0;
 				tmp[i] = 1;
