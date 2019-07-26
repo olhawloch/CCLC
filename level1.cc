@@ -7,7 +7,11 @@ Move level1::choose_move(BoardState bs)
 	Colour playing = bs.get_turn();
 	int index = (playing == Colour::WHITE) : 0 ? 1;
 
-	for (auto &piece : teams[index].pieces) {
-		for 
-	}
+	std::vector<Move> moves = bs.teams[index].get_moves();
+
+	int size = moves.size();
+
+	index = rand() % size;
+
+	return moves[index];
 }

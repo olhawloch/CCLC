@@ -265,7 +265,19 @@ std::vector<Move> Team::get_moves() const
 			if (lm[i] == 1) {
 				tmp = 0;
 				tmp[i] = 1;
-				moves.emplace_back(Move{to_posn(tmp), pos, Type::EMPTY});
+				Type promo = Type::EMPTY;
+				if (piece.get_type() == Type::PAWN) {
+					if (piece.get_team() == Colour::WHITE) {
+						if ((tmp & WHITE_PROMOTION).any()) {
+							promo = Type::QUEEN;
+						}
+					} else { //Colour::BLACK
+						if ((tmp & BLACK_PROMOTION).any()) {
+							promo = Type::QUEEN;
+						}
+					}
+				}
+				moves.emplace_back(Move{to_posn(tmp), pos, promo});
 			}
 		}
 	}
