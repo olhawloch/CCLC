@@ -120,6 +120,14 @@ Bitboard BoardState::get_enpassant_sqr() const
 	return enpassant_sqr;
 }
 
+void BoardState::calc_sudo_legal_moves()
+{
+	Bitboard w_pos = teams[0].pos_pieces();
+	Bitboard b_pos = teams[1].pos_pieces();
+	teams[0].calc_sudo_legal_moves(w_pos, b_pos, false);
+	teams[1].calc_sudo_legal_moves(b_pos, w_pos, false);
+}
+
 void BoardState::calc_legal_moves()
 {
 	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];

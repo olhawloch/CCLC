@@ -5,7 +5,7 @@
 #include "posn.h"
 #include "team.h"
 #include <vector>
-#include "boardstate.h"
+#include "boardstate.h" 
 #include "setup.h"
 
 using namespace std;
@@ -48,11 +48,12 @@ int main()
 		//this is where the game is played
 		bs.calc_legal_moves();
 		cout << "Begin playing: move from to or resign" << endl;
+		cin >> command;
+		if (cin.fail())
+			break;
+
 		getline(cin, line);
-
 		stringstream ss{line};
-
-		ss >> command;
 
 		if (command == "move") {
 			ss >> from; //read in e1
@@ -66,10 +67,10 @@ int main()
 
 			col = convert_col(from[0]);
 			row = from[1] - '0';
-			Posn f{row - 1, col - 1};
+			Posn f{col - 1, row - 1};
 			col = convert_col(to[0]);
 			row = to[1] - '0';
-			Posn t{row - 1, col - 1};
+			Posn t{col - 1, row - 1};
 
 			ss >> promotion;
 

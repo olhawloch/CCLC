@@ -139,12 +139,6 @@ bool Team::move_piece(Move m)
 bool Team::is_valid_move(Move m)
 {
 
-	std::cout << "WHITE_PROMOTION" << std::endl;
-	std::cout << print_bitboard(WHITE_PROMOTION) << std::endl;
-
-	std::cout << "BLACK_PROMOTION" << std::endl;
-	std::cout << print_bitboard(BLACK_PROMOTION) << std::endl;
-
 	Bitboard from = m.from.to_bitboard();
 	Bitboard to = m.to.to_bitboard();
 	Piece *p = nullptr;
@@ -165,18 +159,14 @@ bool Team::is_valid_move(Move m)
 	if (p->get_type() == Type::PAWN) {
 		if (m.promotion != Type::EMPTY) {
 			if (p->get_team() == Colour::WHITE) {
-				std::cout << "Type is pawn colour is white and non-empty promotion" << std::endl;
 				to &= WHITE_PROMOTION;
 			} else {
-				std::cout << "Type is pawn colour is black and non-empty promotion" << std::endl;
 				to &= BLACK_PROMOTION;
 			}
 		} else {
 			if (p->get_team() == Colour::WHITE) {
-				std::cout << "Type is pawn colour is white and empty promotion" << std::endl;
 				to &= ~WHITE_PROMOTION;
 			} else {
-				std::cout << "Type is pawn colour is black and empty promotion" << std::endl;
 				to &= ~BLACK_PROMOTION;
 			}
 		}
@@ -207,8 +197,8 @@ static Posn to_posn(const Bitboard &b)
 	int index = b.to_string().find("1");
 	const int size = COL_SHIFT * COL_HEIGHT;
 	int actual_index = size - 1 - index;
-	int y = (actual_index % COL_SHIFT) - 1;
-	int x = (actual_index / COL_SHIFT) - 2;
+	int x = (actual_index % COL_SHIFT) - 1;
+	int y = (actual_index / COL_SHIFT) - 2;
 	return Posn{x, y};
 }
 
@@ -253,14 +243,12 @@ std::string Team::print_team() const
 
 Bitboard Team::get_king_pos() const
 {
+	Bitboard k_pos{0};
 	const Piece *king = nullptr;
 	for (auto &piece : pieces) {
 		if (piece.get_type() == Type::KING) {
-			king = &piece;
+			k_pos |= piece.get_pos();
 		}
 	}
-	if (king)
-		return king->get_pos();
-
-	return 0;
+	return k_pos;
 }

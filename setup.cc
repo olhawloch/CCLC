@@ -82,15 +82,27 @@ void setup(BoardState &bs)
 			if (col < 0)
 				continue;
 			row = posn[1] - '0';
-			Posn add{row - 1, col - 1};
+			Posn add{col - 1, row - 1};
 			tmp = add.to_bitboard();
 			// see if it's replacing an already existing piece
 			bs.teams[0].remove_piece(tmp)
 				|| bs.teams[1].remove_piece(tmp);
 
 			if (piece_char[0] < 'a') { //capital -> WHITE
+				if (type == Type::PAWN) {
+					if (row == 8) {
+						std::cout << "Cannot put a white pawn on 8th rank, please try again" << std::endl;
+						continue;
+					}
+				}
 				bs.teams[0].add_piece(Piece{tmp, type, Colour::WHITE});
-			} else { //lower ->BLACK {
+			} else { //lower ->BLACK 
+				if (type == Type::PAWN) {
+					if (row == 1) {
+						std::cout << "Cannot put a black pawn on 1st rank, please try again" << std::endl;
+						continue;
+					}
+				}
 				bs.teams[1].add_piece(Piece{tmp, type, Colour::BLACK});
 			}
 			std::cout << bs.print_board();
@@ -104,7 +116,7 @@ void setup(BoardState &bs)
 			if (col < 0)
 				continue;
 			row = posn[1] - '0';
-			Posn remove{row - 1, col - 1};
+			Posn remove{col - 1, row - 1};
 			tmp = remove.to_bitboard();
 			// try to remove from white first, then black 
 			bs.teams[0].remove_piece(tmp)
@@ -130,21 +142,32 @@ void setup(BoardState &bs)
 				std::cout << "black is set to play first" << std::endl;
 				to_play = Colour::BLACK;
 			} else {
+				std::cout << "That is not a valid colour" << std::endl;
 				continue;
 			}
 			bs.set_turn(to_play);
 		} else if (command == "done") {
-			/*
-			if (w_king == 1 && b_king == 1) {
+			Bitboard w_king = bs.teams[0].get_king_pos();
+			Bitboard b_king = bs.teams[1].get_king_pos();
+			if (w_king.count() == 1 && b_king.count() == 1) {
 				// check no pawns on first or last row
 				// check neither king is in check
-				std::cout << "Leaving setup mode" << std::endl;
-				return;
+				bs.calc_sudo_legal_moves();
+				Team &w_team = bs.teams[0];
+				Team &b_team = bs.teams[1];
+				Bitboard w_atk = bs.teams[0].get_sudo_legal_moves();
+				Bitboard b_atk = bs.teams[1].get_sudo_legal_moves();
+				if (w_team.check(b_atk) || b_team.check(w_atk)) {
+					std::cout << "Can't start in check" << std::endl;
+					continue;
+				} else {
+					std::cout << "Leaving setup mode" << std::endl;
+					return;
+				}
 			} else {
 				std::cout << "Please ensure both teams have 1 king on the board" << std::endl;
+				continue;
 			}
-			*/
-			return;
 		} else { //invalid input 
 			std::cout << "Invalid input, try again." << std::endl;
 		}
