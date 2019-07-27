@@ -7,7 +7,7 @@ CommandInterpreter::CommandInterpreter(Notation syntax): syntax{syntax}
 }
 
 // returns EMPTY if letter not valid
-static Type convert_piece(char letter)
+Type convert_piece(char letter)
 {
 	Type t = Type::EMPTY;
 
@@ -49,63 +49,41 @@ static int convert_col(char letter)
 	return letter - 'a';
 }
 
-static bool is_valid_default(std::string s)
+static bool is_valid_posn_default(std::string s)
 {
 	std::stringstream ss(s);
-	std::string from;
-	std::string to;
+	std::string tmp;
 
-	ss >> from;
-	if (from.length() != 2)
+	ss >> tmp;
+	if (tmp.length() != 2)
 		return false;
-	if (convert_col(from[0]) < 0)
+	if (convert_col(tmp[0]) < 0)
 		return false;
-	if (from[1] < '1' || from[1] > '8')
-		return false;
-	ss >> to;
-	if (to.length() != 2)
-		return false;
-	if (convert_col(to[0]) < 0)
-		return false;
-	if (to[1] < '1' || to[1] > '8')
+	if (tmp[1] < '1' || tmp[1] > '8')
 		return false;
 
 	return true;
 }
 
-// default notation is: from to promotion
-static Move interpret_default(std::string s)
+static Posn interpret_posn_default(std::string s)
 {
 	int x;
 	int y;
-	Type promotion;
 	std::stringstream ss(s);
 	std::string tmp;
 
 	ss >> tmp;
 	x = convert_col(tmp[0]);
 	y = tmp[1] - '1';
-	Posn from{x, y};
-	ss >> tmp;
-	x = convert_col(tmp[0]);
-	y = tmp[1] - '1';
-	Posn to{x, y};
-	std::string promot;
-	ss >> promot;
-	if (promot.length() == 0)
-		promotion = Type::EMPTY;
-	else
-		promotion = convert_piece(promot[0]);
-
-	return Move{to, from, promotion};
+	return Posn {x, y};
 }
 
-bool CommandInterpreter::is_valid_notation(std::string s)
+bool CommandInterpreter::is_valid_posn(std::string s) const
 {
 	bool ret;
 
 	if (syntax == Notation::DEFAULT) {
-		ret = is_valid_default(s);
+		ret = is_valid_posn_default(s);
 	} else if (syntax == Notation::ALGEBRAIC) {
 		assert(0);
 		//ret = is_valid_algebraic(s);
@@ -114,12 +92,81 @@ bool CommandInterpreter::is_valid_notation(std::string s)
 	return ret;
 }
 
-Move CommandInterpreter::interpret_move(std::string s)
+Posn CommandInterpreter::interpret_posn(std::string s) const
+{
+	Posn ret;
+
+	if (syntax == Notation::DEFAULT) {
+		ret = interpret_posn_default(s);
+	} else if (syntax == Notation::ALGEBRAIC) {
+		assert(0);
+		//ret = is_valid_algebraic(s);
+	}
+
+	return ret;
+}
+
+static bool is_valid_move_default(std::string s)
+{
+	std::stringstream ss(s);
+	std::string from;
+	std::string to;
+	std::string promotion;
+
+	ss >> from;
+	ss >> to;
+	
+	ss >> promotion;
+	if (promotion.length() > 1)
+		return false;
+	if (promotion.length() == 1
+			&& (convert_piece(promotion[0]) == Type::EMPTY 
+				|| convert_piece(promotion[0]) == Type::PAWN))
+		return false;
+
+	return is_valid_posn_default(from) && is_valid_posn_default(to);
+}
+
+// default notation is: from to promotion
+static Move interpret_move_default(std::string s)
+{
+	std::stringstream ss(s);
+	Type promotion;
+	std::string tmp;
+
+	ss >> tmp;
+	Posn from = interpret_posn_default(tmp);
+	ss >> tmp;
+	Posn to = interpret_posn_default(tmp);
+
+	std::string promot;
+	ss >> promot;
+	promotion = (promot.length() == 0)
+		? Type::EMPTY : convert_piece(promot[0]);
+
+	return Move{to, from, promotion};
+}
+
+bool CommandInterpreter::is_valid_move(std::string s) const
+{
+	bool ret;
+
+	if (syntax == Notation::DEFAULT) {
+		ret = is_valid_move_default(s);
+	} else if (syntax == Notation::ALGEBRAIC) {
+		assert(0);
+		//ret = is_valid_algebraic(s);
+	}
+
+	return ret;
+}
+
+Move CommandInterpreter::interpret_move(std::string s) const
 {
 	Move ret;
 
 	if (syntax == Notation::DEFAULT) {
-		ret = interpret_default(s);
+		ret = interpret_move_default(s);
 	} else if (syntax == Notation::ALGEBRAIC) {
 		assert(0);
 		//ret = interpret_algebraic(s);

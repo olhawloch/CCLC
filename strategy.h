@@ -10,6 +10,7 @@
 class Strategy {
 	public:
 	virtual ~Strategy();
+	// the default implemenation is for a human player
 	virtual Move choose_move(BoardState &bs);
 };
 

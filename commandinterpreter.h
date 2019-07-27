@@ -10,8 +10,13 @@ class CommandInterpreter {
 
 	public:
 	explicit CommandInterpreter(Notation syntax);
-	bool is_valid_notation(std::string s);
-	Move interpret_move(std::string s);
+
+	bool is_valid_posn(std::string s) const;
+	Posn interpret_posn(std::string s) const;
+	bool is_valid_move(std::string s) const;
+	Move interpret_move(std::string s) const;
 };
+
+Type convert_piece(char letter);
 
 #endif

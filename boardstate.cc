@@ -167,16 +167,23 @@ bool BoardState::move(Move m)
 	return captured;
 }
 
-bool BoardState::checkmate()
+bool BoardState::checkmate() const
 {
-	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
-	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
+	const Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	const Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 	return attack.checkmate(defend.get_sudo_legal_moves());
 }
 
-bool BoardState::stalemate()
+bool BoardState::stalemate() const
 {
-	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	const Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
 	// it's stalemate if the attacking side has no moves
 	return !(attack.get_legal_moves().any());
+}
+
+bool BoardState::check() const
+{
+	const Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	const Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
+	return attack.check(defend.get_sudo_legal_moves());
 }

@@ -4,38 +4,31 @@ Strategy::~Strategy()
 {
 }
 
+// returns a move with promotion set to pawn if invalid input
 Move Strategy::choose_move(BoardState &bs)
 {
 	CommandInterpreter CI{Notation::DEFAULT};
 	std::string line;
 
-	while(1) {
-		std::getline(std::cin, line);
+	std::getline(std::cin, line);
 
-		Move m;
-		if (CI.is_valid_notation(line))
-			m = CI.interpret_move(line);
-		else {
-			std::cout << "Invalid move, try again" << std::endl;
-			continue;
-		}
+	Move tmp{Posn{0, 0}, Posn{0, 0}, Type::PAWN};
+	Move m;
 
-		if (bs.get_turn() == Colour::WHITE) {
-			if (!bs.teams[0].is_valid_move(m)) {
-				std::cout << "{" << m.from.x << ", " << m.from.y << "} " 
-					<< "{" << m.to.x << ", " << m.to.y << "} " << std::endl;
-
-				std::cout << "Invalid move, try again" << std::endl;
-				continue;
-			}
-		} else {
-			if (!bs.teams[1].is_valid_move(m)) {
-				std::cout << "{" << m.from.x << ", " << m.from.y << "} " 
-					<< "{" << m.to.x << ", " << m.to.y << "} " << std::endl;
-				std::cout << "Invalid move, try again" << std::endl;
-				continue;
-			}
-		}
-		return m;
+	if (CI.is_valid_move(line))
+		m = CI.interpret_move(line);
+	else {
+		std::cout << "Invalid move, try again" << std::endl;
+		return tmp;
 	}
+
+	Team &active = (bs.get_turn() == Colour::WHITE)
+		? bs.teams[0] : bs.teams[1];
+
+	if (!active.is_valid_move(m)) {
+		std::cout << "Invalid move, try again" << std::endl;
+		return tmp;
+	}
+
+	return m;
 }

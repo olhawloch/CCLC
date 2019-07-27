@@ -28,9 +28,10 @@ public:
 	void calc_sudo_legal_moves();
 	void calc_legal_moves();
 	bool move(Move m);
-	bool checkmate();
+	bool check() const;
+	bool checkmate() const;
 	// call only after ensuring it's not checkmate
-	bool stalemate();
+	bool stalemate() const;
 };
 
 #endif
