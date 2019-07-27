@@ -39,13 +39,17 @@ int main()
 			setup(bs);
 		} else if (command == "game") {
 			ss >> command;
-			if (command == "human" || command == "computer1" || command == "computer2") {
+			if (command == "human" || command == "computer1" 
+					|| command == "computer2"
+					|| command == "computer3") {
 				one.set_strategy(command);
 			} else {
 				cout << "Incorrect input" << endl;
 			}
 			ss >> command;
-			if (command == "human" || command == "computer1" || command == "computer2") {
+			if (command == "human" || command == "computer1"
+					|| command == "computer2"
+					|| command == "computer3") {
 				two.set_strategy(command);
 				play_game(bs, one, two);
 			} else {
@@ -160,7 +164,7 @@ void setup(BoardState &bs)
 		} else if (command == "done") {
 			Bitboard w_king = bs.teams[0].get_king_pos();
 			Bitboard b_king = bs.teams[1].get_king_pos();
-			if (w_king.count() != 1 && b_king.count() != 1) {
+			if (w_king.count() != 1 || b_king.count() != 1) {
 				cout << "Incorrect number of kings" << endl;
 				continue;
 			}

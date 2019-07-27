@@ -14,6 +14,8 @@ class Team {
 	explicit Team(Colour colour);
 	// returns the colour
 	Colour get_team() const;
+	// returns the number of pieces Team has
+	int get_num_pieces() const;
 	// returns a bitboard of the positions of all pieces in team
 	Bitboard pos_pieces() const;
 	// returns true if the king is in check by enemies_atk

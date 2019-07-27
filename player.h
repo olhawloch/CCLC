@@ -5,6 +5,7 @@
 #include "strategy.h"
 #include "level1.h"
 #include "level2.h"
+#include "level3.h"
 #include <string>
 #include <memory>
 

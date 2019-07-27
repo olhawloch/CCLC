@@ -89,7 +89,7 @@ Bitboard BoardState::get_castling_rights(Colour team) const
 
 	Bitboard tmp{0};
 
-	for (int i = 0; i < castling_rights.size(); ++i) {
+	for (size_t i = 0; i < castling_rights.size(); ++i) {
 		if (castling_rights[i] == king_side) {
 			if (white) {
 				tmp |= WHITE_KS_CASTLE;

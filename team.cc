@@ -11,6 +11,11 @@ Colour Team::get_team() const
 	return colour;
 }
 
+int Team::get_num_pieces() const
+{
+	return pieces.size();
+}
+
 bool Team::check(Bitboard enemies_atk) const
 {
 	const Piece *king = nullptr;
