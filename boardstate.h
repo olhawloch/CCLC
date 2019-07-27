@@ -21,6 +21,7 @@ public:
 	std::string print_board() const;
 	Colour get_turn() const;
 	void set_turn(Colour c);
+	void toggle_turn();
 	Bitboard get_castling_rights(Colour team) const;
 	unsigned int get_half_turn() const;
 	unsigned int get_full_turn() const;

@@ -72,6 +72,10 @@ void BoardState::set_turn(Colour c)
 	turn = c;
 }
 
+void BoardState::toggle_turn() {
+	turn = (turn == Colour::WHITE) ? Colour::BLACK : Colour::WHITE;
+}
+
 Bitboard BoardState::get_castling_rights(Colour team) const
 {
 	char king_side = 'k';

@@ -39,13 +39,13 @@ int main()
 			setup(bs);
 		} else if (command == "game") {
 			ss >> command;
-			if (command == "human" || command == "computer1") {
+			if (command == "human" || command == "computer1" || command == "computer2") {
 				one.set_strategy(command);
 			} else {
 				cout << "Incorrect input" << endl;
 			}
 			ss >> command;
-			if (command == "human" || command == "computer1") {
+			if (command == "human" || command == "computer1" || command == "computer2") {
 				two.set_strategy(command);
 				play_game(bs, one, two);
 			} else {

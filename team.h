@@ -12,11 +12,13 @@ class Team {
 	
 	public:
 	explicit Team(Colour colour);
+	// returns the colour
+	Colour get_team() const;
 	// returns a bitboard of the positions of all pieces in team
 	Bitboard pos_pieces() const;
 	// returns true if the king is in check by enemies_atk
 	bool check(Bitboard enemies_atk) const;
-	// returns a vector of pieces that are checking the enemey king
+	// returns a vector of pieces that are checking the enemy king
 	std::vector<Piece> checking_pieces(const Bitboard enemy_king_pos);
 	// returns true if two or more pieces are checking the enemy_king_pos
 	bool is_double_check(const Bitboard enemy_king_pos) const;
@@ -49,6 +51,8 @@ class Team {
 	Bitboard get_legal_moves() const;
 	// returns the legal moves as a vector of Moves
 	std::vector<Move> get_moves() const;
+	//returns the legal captures as a vector of Moves
+	std::vector<Move> get_captures(Bitboard enemy_pos) const;
 	// returns true if the king is in checkmate according to enemies_atk
 	bool checkmate(const Bitboard enemies_atk) const;
 	// moves a piece in team according to Move m, returns true if successful,

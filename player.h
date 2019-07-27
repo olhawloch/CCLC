@@ -4,6 +4,7 @@
 #include "colour.h"
 #include "strategy.h"
 #include "level1.h"
+#include "level2.h"
 #include <string>
 #include <memory>
 

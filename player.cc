@@ -15,7 +15,7 @@ void Player::set_strategy(std::string strategy)
 	} else if (strategy == "computer1") {
 		strat = new Level1{};
 	} else if (strategy == "computer2") {
-		//strat = std::make_unique<Strategy>(new Level2());
+		strat = new Level2{};
 	} else if (strategy == "computer3") {
 		//strat = std::make_unique<Strategy>(new Level3());
 	} else { // if (s == "computer4") {

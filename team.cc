@@ -6,6 +6,11 @@ Team::Team(Colour colour) : colour{colour}
 {
 }
 
+Colour Team::get_team() const
+{
+	return colour;
+}
+
 bool Team::check(Bitboard enemies_atk) const
 {
 	const Piece *king = nullptr;
@@ -281,5 +286,41 @@ std::vector<Move> Team::get_moves() const
 		}
 	}
 
+	return moves;
+}
+
+std::vector<Move> Team::get_captures(Bitboard enemy_pos) const
+{
+	std::vector<Move> moves;
+	Bitboard tmp{0};
+	Colour c = get_team();
+
+	for (auto &piece : pieces) {
+		Bitboard lm = piece.get_legal_moves();
+		Posn pos = to_posn(piece.get_pos());
+		Type type = piece.get_type();
+		for (int i = 0; i < COL_SHIFT * COL_HEIGHT; ++i) {
+			if (lm[i] == 1) {
+				tmp = 0;
+				tmp[i] = 1;
+				Type promo = Type::EMPTY;
+				if (!(enemy_pos & tmp).any()) {
+					continue;
+				}
+				if (type == Type::PAWN) {
+					if (c == Colour::WHITE
+						&& (tmp & WHITE_PROMOTION).any()) {
+						promo = Type::QUEEN;
+					}
+					if (c == Colour::BLACK
+						&& (tmp & BLACK_PROMOTION).any()) {
+						promo = Type::QUEEN;
+					}
+				}
+				moves.emplace_back(Move{to_posn(tmp), pos, promo});
+			}
+		}
+	}
+	
 	return moves;
 }
