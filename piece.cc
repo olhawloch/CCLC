@@ -268,6 +268,7 @@ static Bitboard sudo_legal_king(const Piece &p)
 	slm |= pos >> 1;
 	slm |= pos << 1;
 
+
 	return slm & VALID_BOARD;
 }
 
@@ -390,10 +391,38 @@ static Bitboard check_legal_back_rank(Piece &p, Bitboard friends,
 	return lm;
 }
 
-static Bitboard not_check_legal_king(Piece &p, Bitboard friends,
-		Bitboard enemies_atk)
+static Bitboard not_check_legal_king(Piece &p, Bitboard friends, Bitboard enemies,
+		Bitboard enemies_atk, Bitboard castling_rights)
 {
-	return (p.get_sudo_legal_moves() & ~friends) & ~enemies_atk;
+	const Bitboard pos = p.get_pos();	
+	Bitboard sl = p.get_sudo_legal_moves();
+	Bitboard occupied = friends | enemies & ~pos;
+	Bitboard w_ks_occupied = WHITE_KS_CASTLE >> 2 | WHITE_KS_CASTLE >> 1 | WHITE_KS_CASTLE;
+	Bitboard w_qs_occupied = WHITE_QS_CASTLE << 2 | WHITE_QS_CASTLE << 1 | WHITE_QS_CASTLE;
+	Bitboard b_ks_occupied = BLACK_KS_CASTLE >> 2 | BLACK_KS_CASTLE >> 1 | BLACK_KS_CASTLE;
+	Bitboard b_qs_occupied = BLACK_QS_CASTLE << 2 | BLACK_QS_CASTLE << 1 | BLACK_QS_CASTLE;
+	// adds castling moves
+	if (p.get_team() == Colour::WHITE) {
+		if ((WHITE_KS_CASTLE >> 2) == pos && (w_ks_occupied & occupied).none()
+			&& (w_ks_occupied & enemies_atk).none() 
+			&& (WHITE_KS_CASTLING & castling_rights).any())
+			sl |= WHITE_KS_CASTLE;
+		if ((WHITE_QS_CASTLE << 2) == pos && (w_qs_occupied & occupied).none()
+			&& (w_qs_occupied & enemies_atk).none()
+			&& (WHITE_QS_CASTLING & castling_rights).any())
+			sl |= WHITE_QS_CASTLE;
+	} else {
+		if ((BLACK_KS_CASTLE >> 2) == pos && (b_ks_occupied & occupied).none()
+			&& (w_ks_occupied & enemies_atk).none() 
+			&& (BLACK_KS_CASTLING & castling_rights).any())
+			sl |= BLACK_KS_CASTLE;
+		if ((BLACK_QS_CASTLE << 2) == pos && (b_qs_occupied & occupied).none()
+			&& (b_qs_occupied & enemies_atk).none()
+			&& (BLACK_QS_CASTLING & castling_rights).any())
+			sl |= BLACK_QS_CASTLE;
+	}
+
+	return (sl & ~friends) & ~enemies_atk;
 }
 
 static Bitboard check_legal_king(Piece &p, std::vector<Piece> checking,
@@ -410,7 +439,7 @@ static Bitboard check_legal_king(Piece &p, std::vector<Piece> checking,
 void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
 		std::vector<Piece> checking, Bitboard checking_line,
 		const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
-		bool double_check)
+		bool double_check, Bitboard castling_rights)
 {
 	// only king can move if in double check
 	if (type != Type::KING && double_check) {
@@ -445,8 +474,8 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
 			legal_moves = check_legal_king(*this, checking, friends,
 					enemies_atk);
 		else
-			legal_moves = not_check_legal_king(*this, friends,
-					enemies_atk);
+			legal_moves = not_check_legal_king(*this, friends, enemies,
+					enemies_atk, castling_rights);
 		break;
 	default:
 		// type is empty, should never be the case 

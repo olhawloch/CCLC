@@ -39,7 +39,8 @@ class Piece {
 	void calc_legal_moves(Bitboard friends, Bitboard enemies,
 			std::vector<Piece> checking, Bitboard checking_line,
 			const std::vector<Bitboard> &pinning,
-			Bitboard enemies_atk, bool double_check);
+			Bitboard enemies_atk, bool double_check,
+			Bitboard castling_rights);
 	Bitboard line_to_king(const Bitboard king_pos);
 };
 

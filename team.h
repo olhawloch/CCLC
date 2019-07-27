@@ -43,7 +43,7 @@ class Team {
 	void calc_legal_moves(const Bitboard friends, const Bitboard enemies,
 			std::vector<Piece> checking, Bitboard checking_line,
 			const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
-			bool double_check);
+			bool double_check, Bitboard castling_rights);
 
 	// getter for sudo_legal_moves, must be called after calc_sudo_legal has
 	// been run.
@@ -72,6 +72,7 @@ class Team {
 	std::string print_team() const;
 	// returns a bitboard of the king's position
 	Bitboard get_king_pos() const;
+	Piece *piece_at(Bitboard pos);
 };
 
 #endif

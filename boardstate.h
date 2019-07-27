@@ -33,6 +33,8 @@ public:
 	bool checkmate() const;
 	// call only after ensuring it's not checkmate
 	bool stalemate() const;
+
+	void set_castling_rights(Move m);
 };
 
 #endif

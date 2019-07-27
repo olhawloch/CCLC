@@ -165,6 +165,18 @@ bool BoardState::move(Move m)
 	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
 	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 
+	Piece *moved = attack.get_piece_at(m.from.to_bitboard());
+	if (moved->get_type() == Type::KING) {
+		if (m.from.x - m.to.x > 1) {
+			Piece *rook = attack.get_piece_at(Posn{m.from.x - 4, m.from.y}.to_bitboard());
+			Posn rook_to{m.from.x - 1, m.from.y};
+			rook->set_pos(rook_to.to_bitboard());
+		} else {
+			Piece *rook = attack.get_piece_at(Posn{m.from.x + 3, m.from.y}.to_bitboard());
+			Posn rook_to{m.from.x + 1, m.from.y};
+			rook->set_pos(rook_to.to_bitboard());
+		}
+	}
 	bool captured = defend.remove_piece((m.to).to_bitboard());
 	attack.move_piece(m);
 
@@ -190,4 +202,33 @@ bool BoardState::check() const
 	const Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
 	const Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
 	return attack.check(defend.get_sudo_legal_moves());
+}
+
+void BoardState::set_castling_rights(Move m)
+{
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	Team &defend = (turn == Colour::WHITE) ? teams[1] : teams[0];
+	const Bitboard castling = get_castling_rights(get_turn());
+	if (castling.none())
+		return;
+	int ascii_shift = 0;
+	if (get_turn() == Colour::WHITE)
+		ascii_shift = 'a' - 'A';
+	Piece *moved = attack.get_piece_at(m.from.to_bitboard());
+	Type type = moved->get_type();
+	if (type == Type::KING) {
+		castling_rights.erase(std::remove(castling_rights.begin(), 
+			castling_rights.end(), 'q' + ascii_shift), castling_rights.end());
+		castling_rights.erase(std::remove(castling_rights.begin(), 
+			castling_rights.end(), 'k' + ascii_shift), castling_rights.end());
+	}
+	else if (type == Type::ROOK)
+		if (move.from.x == 0)
+			// left rook, remove that colour's queen side castling rights
+			castling_rights.erase(std::remove(castling_rights.begin(), 
+				castling_rights.end(), 'q' + ascii_shift), castling_rights.end());
+		else if (move.from.x == 7)
+			// right rook, remove that colour's king side castling rights	
+			castling_rights.erase(std::remove(castling_rights.begin(), 
+				castling_rights.end(), 'k' + ascii_shift), castling_rights.end());
 }
