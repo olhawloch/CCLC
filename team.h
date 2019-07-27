@@ -72,7 +72,8 @@ class Team {
 	std::string print_team() const;
 	// returns a bitboard of the king's position
 	Bitboard get_king_pos() const;
-	Piece *piece_at(Bitboard pos);
+	// returns a pointer to the piece at pos, if no piece at pos returns nullptr
+	Piece *get_piece_at(Bitboard pos);
 };
 
 #endif

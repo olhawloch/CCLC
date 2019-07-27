@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <stack>
 
 #include "posn.h"
 #include "piece.h"
@@ -14,11 +15,14 @@ using namespace std;
 
 void setup(BoardState &bs);
 int play_game(BoardState &bs, Player &one, Player &two);
+void default_board(BoardState &bs);
 
 
 int main()
 {
+	stack<BoardState> states;
 	BoardState bs;
+	default_board(bs);
 
 	string command;
 	string line;
@@ -41,7 +45,8 @@ int main()
 			ss >> command;
 			if (command == "human" || command == "computer1" 
 					|| command == "computer2"
-					|| command == "computer3") {
+					|| command == "computer3"
+					|| command == "computer4") {
 				one.set_strategy(command);
 			} else {
 				cout << "Incorrect input" << endl;
@@ -49,9 +54,12 @@ int main()
 			ss >> command;
 			if (command == "human" || command == "computer1"
 					|| command == "computer2"
-					|| command == "computer3") {
+					|| command == "computer3"
+					|| command == "computer4") {
 				two.set_strategy(command);
 				play_game(bs, one, two);
+				bs = BoardState{};
+				default_board(bs);
 			} else {
 				cout << "Incorrect input" << endl;
 			}
@@ -216,7 +224,8 @@ int play_game(BoardState &bs, Player &one, Player &two)
 		}
 
 		while(1) {
-			cout << to_play << "'s turn: move from to or resign" << endl;
+			cout << to_play
+				<< "'s turn: move from to or resign" << endl;
 			cin >> command;
 			
 			if (cin.fail())
@@ -225,16 +234,15 @@ int play_game(BoardState &bs, Player &one, Player &two)
 			if (command == "move") {
 				Player &attack = (bs.get_turn() == Colour::WHITE)
 					? one : two;
-
+				// get the move
 				Move new_move = attack.strat->choose_move(bs);
 				if (new_move.promotion == Type::PAWN) {
 					cout << "Invalid move, try again" << endl;
 					continue;
 				}
+				bs.set_castling_rights(new_move);
 				bs.move(new_move);
-				Colour next_turn = (bs.get_turn() == Colour::WHITE)
-					? Colour::BLACK : Colour::WHITE;
-				bs.set_turn(next_turn);
+				bs.toggle_turn();
 				break;
 			} if (command == "resign") { 
 				string winner = (bs.get_turn() == Colour::WHITE)
@@ -252,4 +260,47 @@ int play_game(BoardState &bs, Player &one, Player &two)
 		}
 	}
 	return 0;
+}
+
+void default_board(BoardState &bs)
+{
+	bs.set_turn(Colour::WHITE);
+	bs.set_castling_rights("KQkq");
+
+	Team &white = bs.teams[0];
+	Team &black = bs.teams[1];
+	const int width = 8;
+	for (int x = 0; x < width / 2; ++x) {
+		white.add_piece(Piece{Posn{x, 1}.to_bitboard(),
+				Type::PAWN, Colour::WHITE});
+		white.add_piece(Piece{Posn{width - x - 1, 1}.to_bitboard(),
+				Type::PAWN, Colour::WHITE});
+		// black
+		black.add_piece(Piece{Posn{x, width - 2}.to_bitboard(),
+				Type::PAWN, Colour::BLACK});
+		black.add_piece(Piece{Posn{width - x - 1, width - 2}.to_bitboard(),
+				Type::PAWN, Colour::BLACK});
+		if (x == width / 2 - 1) {
+			white.add_piece(Piece{Posn{x, 0}.to_bitboard(),
+					Type::QUEEN, Colour::WHITE});
+			white.add_piece(Piece{Posn{width - x - 1, 0}.to_bitboard(),
+					Type::KING, Colour::WHITE});
+			// black
+			black.add_piece(Piece{Posn{x, width - 1}.to_bitboard(),
+					Type::QUEEN, Colour::BLACK});
+			black.add_piece(Piece{Posn{width - x - 1, width - 1}.to_bitboard(),
+					Type::KING, Colour::BLACK});
+		} else {
+			white.add_piece(Piece{Posn{x, 0}.to_bitboard(),
+					(Type)(2 + x), Colour::WHITE});
+			white.add_piece(Piece{Posn{width - x - 1, 0}.to_bitboard(),
+					(Type)(2 + x), Colour::WHITE});
+			// black
+			black.add_piece(Piece{Posn{x, width - 1}.to_bitboard(),
+					(Type)(2 + x), Colour::BLACK});
+			black.add_piece(Piece{Posn{width - x - 1, width - 1}.to_bitboard(),
+					(Type)(2 + x), Colour::BLACK});
+		}
+
+	}
 }

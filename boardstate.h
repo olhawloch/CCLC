@@ -21,6 +21,8 @@ public:
 	std::string print_board() const;
 	Colour get_turn() const;
 	void set_turn(Colour c);
+	void set_castling_rights(std::string s);
+	void set_castling_rights(Move m);
 	void toggle_turn();
 	Bitboard get_castling_rights(Colour team) const;
 	unsigned int get_half_turn() const;
@@ -33,8 +35,6 @@ public:
 	bool checkmate() const;
 	// call only after ensuring it's not checkmate
 	bool stalemate() const;
-
-	void set_castling_rights(Move m);
 };
 
 #endif

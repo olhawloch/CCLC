@@ -18,7 +18,7 @@ Move Strategy::choose_move(BoardState &bs)
 	if (CI.is_valid_move(line))
 		m = CI.interpret_move(line);
 	else {
-		std::cout << "Invalid move, try again" << std::endl;
+		std::cout << "1 Invalid move, try again" << std::endl;
 		return tmp;
 	}
 
@@ -26,7 +26,7 @@ Move Strategy::choose_move(BoardState &bs)
 		? bs.teams[0] : bs.teams[1];
 
 	if (!active.is_valid_move(m)) {
-		std::cout << "Invalid move, try again" << std::endl;
+		std::cout << "2 Invalid move, try again" << std::endl;
 		return tmp;
 	}
 

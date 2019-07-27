@@ -396,29 +396,29 @@ static Bitboard not_check_legal_king(Piece &p, Bitboard friends, Bitboard enemie
 {
 	const Bitboard pos = p.get_pos();	
 	Bitboard sl = p.get_sudo_legal_moves();
-	Bitboard occupied = friends | enemies & ~pos;
-	Bitboard w_ks_occupied = WHITE_KS_CASTLE >> 2 | WHITE_KS_CASTLE >> 1 | WHITE_KS_CASTLE;
-	Bitboard w_qs_occupied = WHITE_QS_CASTLE << 2 | WHITE_QS_CASTLE << 1 | WHITE_QS_CASTLE;
-	Bitboard b_ks_occupied = BLACK_KS_CASTLE >> 2 | BLACK_KS_CASTLE >> 1 | BLACK_KS_CASTLE;
-	Bitboard b_qs_occupied = BLACK_QS_CASTLE << 2 | BLACK_QS_CASTLE << 1 | BLACK_QS_CASTLE;
+	Bitboard occupied = (friends | enemies) & (~pos);
 	// adds castling moves
 	if (p.get_team() == Colour::WHITE) {
+		Bitboard w_ks_occupied = WHITE_KS_CASTLE >> 2 | WHITE_KS_CASTLE >> 1 | WHITE_KS_CASTLE;
+		Bitboard w_qs_occupied = WHITE_QS_CASTLE << 2 | WHITE_QS_CASTLE << 1 | WHITE_QS_CASTLE | WHITE_QS_CASTLE >> 1;
 		if ((WHITE_KS_CASTLE >> 2) == pos && (w_ks_occupied & occupied).none()
 			&& (w_ks_occupied & enemies_atk).none() 
-			&& (WHITE_KS_CASTLING & castling_rights).any())
+			&& (WHITE_KS_CASTLE & castling_rights).any())
 			sl |= WHITE_KS_CASTLE;
 		if ((WHITE_QS_CASTLE << 2) == pos && (w_qs_occupied & occupied).none()
 			&& (w_qs_occupied & enemies_atk).none()
-			&& (WHITE_QS_CASTLING & castling_rights).any())
+			&& (WHITE_QS_CASTLE & castling_rights).any())
 			sl |= WHITE_QS_CASTLE;
 	} else {
+		Bitboard b_ks_occupied = BLACK_KS_CASTLE >> 2 | BLACK_KS_CASTLE >> 1 | BLACK_KS_CASTLE;
+		Bitboard b_qs_occupied = BLACK_QS_CASTLE << 2 | BLACK_QS_CASTLE << 1 | BLACK_QS_CASTLE | BLACK_QS_CASTLE >> 1;
 		if ((BLACK_KS_CASTLE >> 2) == pos && (b_ks_occupied & occupied).none()
-			&& (w_ks_occupied & enemies_atk).none() 
-			&& (BLACK_KS_CASTLING & castling_rights).any())
+			&& (b_ks_occupied & enemies_atk).none() 
+			&& (BLACK_KS_CASTLE & castling_rights).any())
 			sl |= BLACK_KS_CASTLE;
 		if ((BLACK_QS_CASTLE << 2) == pos && (b_qs_occupied & occupied).none()
 			&& (b_qs_occupied & enemies_atk).none()
-			&& (BLACK_QS_CASTLING & castling_rights).any())
+			&& (BLACK_QS_CASTLE & castling_rights).any())
 			sl |= BLACK_QS_CASTLE;
 	}
 
@@ -426,13 +426,13 @@ static Bitboard not_check_legal_king(Piece &p, Bitboard friends, Bitboard enemie
 }
 
 static Bitboard check_legal_king(Piece &p, std::vector<Piece> checking,
-		Bitboard friends, Bitboard enemies_atk)
+		Bitboard friends, Bitboard enemies, Bitboard enemies_atk)
 {
 	Bitboard checking_one_deep_moves{0};
 	for (auto &piece : checking) {
 		checking_one_deep_moves |= piece.get_one_deep_moves();
 	}	
-	return not_check_legal_king(p, friends, enemies_atk)
+	return not_check_legal_king(p, friends, enemies, enemies_atk, 0)
 		& ~checking_one_deep_moves;
 }
 
@@ -472,7 +472,7 @@ void Piece::calc_legal_moves(Bitboard friends, Bitboard enemies,
 	case Type::KING:
 		if (checking.size() != 0)
 			legal_moves = check_legal_king(*this, checking, friends,
-					enemies_atk);
+					enemies, enemies_atk);
 		else
 			legal_moves = not_check_legal_king(*this, friends, enemies,
 					enemies_atk, castling_rights);

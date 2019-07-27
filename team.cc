@@ -98,7 +98,8 @@ void Team::calc_legal_moves(Bitboard friends, Bitboard enemies,
 {
 	for (auto &piece : pieces) {
 		piece.calc_legal_moves(friends, enemies, checking, checking_line,
-				pinning, enemies_atk, double_check, castling_rights);
+				pinning, enemies_atk, double_check,
+				castling_rights);
 	}
 }
 
@@ -330,9 +331,9 @@ std::vector<Move> Team::get_captures(Bitboard enemy_pos) const
 	return moves;
 }
 
-Piece *Team::piece_at(Bitboard pos)
+Piece *Team::get_piece_at(Bitboard pos)
 {
-	for (auto piece : pieces) {
+	for (auto &piece : pieces) {
 		if (piece.get_pos() == pos) {
 			return &piece;
 		}
