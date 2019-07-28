@@ -16,7 +16,7 @@ class Player {
 
 	public:
 	float score = 0;
-	Strategy *strat;
+	std::unique_ptr<Strategy> strat;
 
 	explicit Player(Colour c);
 	~Player();
