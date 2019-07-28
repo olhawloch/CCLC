@@ -14,15 +14,17 @@
 using namespace std;
 
 void setup(BoardState &bs);
-int play_game(BoardState &bs, Player &one, Player &two);
+int play_game(stack<BoardState> &states, Player &one, Player &two);
 void default_board(BoardState &bs);
 
 
 int main()
 {
-	stack<BoardState> states;
 	BoardState bs;
 	default_board(bs);
+
+	stack<BoardState> states;
+	states.push(bs);
 
 	string command;
 	string line;
@@ -41,6 +43,7 @@ int main()
 
 		if (command == "setup") {
 			setup(bs);
+			states.push(bs);
 		} else if (command == "game") {
 			ss >> command;
 			if (command == "human" || command == "computer1" 
@@ -57,9 +60,10 @@ int main()
 					|| command == "computer3"
 					|| command == "computer4") {
 				two.set_strategy(command);
-				play_game(bs, one, two);
-				bs = BoardState{};
-				default_board(bs);
+				play_game(states, one, two);
+				while(states.size() != 1) {
+					states.pop();
+				}
 			} else {
 				cout << "Incorrect input" << endl;
 			}
@@ -195,13 +199,16 @@ void setup(BoardState &bs)
 	return;
 }
 
-int play_game(BoardState &bs, Player &one, Player &two)
+int play_game(stack<BoardState> &states, Player &one, Player &two)
 {
 	string command;
-
+	// game loop
 	while(1) {
+		BoardState bs = states.top();
 		bs.calc_legal_moves();
+		// print board
 		cout << bs.print_board();
+
 		string to_play = (bs.get_turn() == Colour::WHITE) 
 			? "White" : "Black";
 
@@ -222,7 +229,7 @@ int play_game(BoardState &bs, Player &one, Player &two)
 		} else if (bs.check()) {
 			cout << to_play << " is in check." << endl;
 		}
-
+		// command loop
 		while(1) {
 			cout << to_play
 				<< "'s turn: move from to or resign" << endl;
@@ -240,9 +247,12 @@ int play_game(BoardState &bs, Player &one, Player &two)
 					cout << "Invalid move, try again" << endl;
 					continue;
 				}
-				bs.set_castling_rights(new_move);
-				bs.move(new_move);
-				bs.toggle_turn();
+				BoardState bs_copy = bs;
+				bs_copy.set_castling_rights(new_move);
+				bs_copy.move(new_move);
+				bs_copy.set_enpassant_sqr(new_move);
+				bs_copy.toggle_turn();
+				states.push(bs_copy);
 				break;
 			} if (command == "resign") { 
 				string winner = (bs.get_turn() == Colour::WHITE)
@@ -253,6 +263,12 @@ int play_game(BoardState &bs, Player &one, Player &two)
 				else 
 					two.score += 1;
 				return 0;
+			} if (command == "undo") {
+				if (states.size() > 1) {
+					states.pop();
+					break;
+				}
+				cout << "Can't undo" << endl;
 			} else {
 				cout << "Incorrect input, try again" << endl;
 			}

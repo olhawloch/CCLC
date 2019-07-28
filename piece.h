@@ -40,7 +40,7 @@ class Piece {
 			std::vector<Piece> checking, Bitboard checking_line,
 			const std::vector<Bitboard> &pinning,
 			Bitboard enemies_atk, bool double_check,
-			Bitboard castling_rights);
+			Bitboard castling_rights, Bitboard enpassant_sqr);
 	Bitboard line_to_king(const Bitboard king_pos);
 };
 

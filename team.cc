@@ -94,12 +94,12 @@ void Team::calc_one_deep_moves(const Bitboard friends, const Bitboard enemies)
 void Team::calc_legal_moves(Bitboard friends, Bitboard enemies,
 		std::vector<Piece> checking, Bitboard checking_line,
 		const std::vector<Bitboard> &pinning, Bitboard enemies_atk,
-		bool double_check, Bitboard castling_rights)
+		bool double_check, Bitboard castling_rights, Bitboard enpassant_sqr)
 {
 	for (auto &piece : pieces) {
 		piece.calc_legal_moves(friends, enemies, checking, checking_line,
 				pinning, enemies_atk, double_check,
-				castling_rights);
+				castling_rights, enpassant_sqr);
 	}
 }
 

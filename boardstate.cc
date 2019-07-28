@@ -161,7 +161,7 @@ void BoardState::calc_legal_moves()
 
 	attack.calc_legal_moves(attack_pos, defend_pos, checking, checking_line,
 			pinning, defend.get_sudo_legal_moves(), double_check,
-			castling);
+			castling, enpassant_sqr);
 }
 
 bool BoardState::move(Move m)
@@ -172,16 +172,27 @@ bool BoardState::move(Move m)
 	Piece *moved = attack.get_piece_at(m.from.to_bitboard());
 	if (moved->get_type() == Type::KING) {
 		if (m.from.x - m.to.x > 1) {
-			Piece *rook = attack.get_piece_at(Posn{m.from.x - 4, m.from.y}.to_bitboard());
+			Piece *rook = attack.get_piece_at(
+					Posn{m.from.x - 4, m.from.y}.to_bitboard());
 			Posn rook_to{m.from.x - 1, m.from.y};
 			rook->set_pos(rook_to.to_bitboard());
 		} else if (m.to.x - m.from.x > 1) {
-			Piece *rook = attack.get_piece_at(Posn{m.from.x + 3, m.from.y}.to_bitboard());
+			Piece *rook = attack.get_piece_at(
+					Posn{m.from.x + 3, m.from.y}.to_bitboard());
 			Posn rook_to{m.from.x + 1, m.from.y};
 			rook->set_pos(rook_to.to_bitboard());
 		}
 	}
-	bool captured = defend.remove_piece((m.to).to_bitboard());
+
+	bool captured;
+	if (enpassant_sqr.any() && moved->get_type() == Type::PAWN
+			&& (enpassant_sqr & m.to.to_bitboard()).any()) {
+		int offset = (turn == Colour::WHITE) ? -1 : 1;
+		captured = defend.remove_piece(
+				Posn{m.to.x, m.to.y + offset}.to_bitboard());
+	} else {
+		captured = defend.remove_piece((m.to).to_bitboard());
+	}
 	attack.move_piece(m);
 
 	return captured;
@@ -251,4 +262,26 @@ void BoardState::set_castling_rights(Move m)
 				castling_rights.end());
 		}
 	}
+}
+
+// must be called after piece has already been moved
+void BoardState::set_enpassant_sqr(Move m)
+{
+	Team &attack = (turn == Colour::WHITE) ? teams[0] : teams[1];
+	Piece *moving = attack.get_piece_at(m.to.to_bitboard());
+	Type type = moving->get_type();
+
+	enpassant_sqr = 0;
+	if (type != Type::PAWN) {
+		return;
+	}
+
+	// Pawn move
+	if (m.to.y - m.from.y > 1) { // white pawn moving 2 up
+		enpassant_sqr = Posn{m.from.x, m.from.y + 1}.to_bitboard();
+	}
+	if (m.from.y - m.to.y > 1) { // black pawn moving 2 down
+		enpassant_sqr = Posn{m.from.x, m.from.y - 1}.to_bitboard();
+	}
+	return;
 }
