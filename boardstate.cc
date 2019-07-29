@@ -1,5 +1,4 @@
 #include "boardstate.h"
-#include <iostream>
 #include <algorithm>
 
 BoardState::BoardState() : turn{Colour::WHITE}, castling_rights{""}, half_turn{0},
@@ -114,6 +113,11 @@ unsigned int BoardState::get_half_turn() const
 	return half_turn;
 }
 
+void BoardState::inc_full_turn()
+{
+	full_turn++;	
+}
+
 unsigned int BoardState::get_full_turn() const
 {
 	return full_turn;
@@ -194,6 +198,12 @@ bool BoardState::move(Move m)
 		captured = defend.remove_piece((m.to).to_bitboard());
 	}
 	attack.move_piece(m);
+	
+	if (moved->get_type() != Type::PAWN && !captured) {
+		++half_turn;
+	} else {
+		half_turn = 0;
+	}
 
 	return captured;
 }

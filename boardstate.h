@@ -27,6 +27,7 @@ public:
 	void toggle_turn();
 	Bitboard get_castling_rights(Colour team) const;
 	unsigned int get_half_turn() const;
+	void inc_full_turn();
 	unsigned int get_full_turn() const;
 	Bitboard get_enpassant_sqr() const;
 	void calc_sudo_legal_moves();

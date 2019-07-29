@@ -4,7 +4,7 @@ MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}	# makefile name
 
 OBJECTS = bitboard.o piece.o team.o player.o boardstate.o commandinterpreter.o strategy.o level1.o level2.o level3.o level4.o main.o
 DEPENDS = ${OBJECTS:.o=.d}			# substitute ".o" with ".d"
-EXEC = chess.out				# executable name
+EXEC = chess					# executable name
 
 ########## Targets ##########
 

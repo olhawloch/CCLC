@@ -1,6 +1,5 @@
 #include "level4.h"
 #include <map>
-#include <iostream>
 
 const int SEARCH_DEPTH = 1;
 
@@ -57,7 +56,6 @@ Move Level4::choose_move(BoardState &bs)
 		float val = average_num_moves(m, bs, SEARCH_DEPTH);
 		ordered_moves.emplace(val, m);
 	}
-	std::cout << "Choice value: " << ordered_moves.begin()->first << std::endl;
 	return ordered_moves.begin()->second;
 }
 

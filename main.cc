@@ -42,8 +42,7 @@ int main()
 		stringstream ss{line};
 
 		if (command == "setup") {
-			setup(bs);
-			states.push(bs);
+			setup(states.top());
 		} else if (command == "game") {
 			ss >> command;
 			if (command == "human" || command == "computer1" 
@@ -61,9 +60,10 @@ int main()
 					|| command == "computer4") {
 				two.set_strategy(command);
 				play_game(states, one, two);
-				while(states.size() != 1) {
+				while(!states.empty()) {
 					states.pop();
 				}
+				states.push(bs);
 			} else {
 				cout << "Incorrect input" << endl;
 			}
@@ -202,6 +202,7 @@ void setup(BoardState &bs)
 int play_game(stack<BoardState> &states, Player &one, Player &two)
 {
 	string command;
+	unsigned int ply = 0;
 	// game loop
 	while(1) {
 		BoardState bs = states.top();
@@ -229,6 +230,8 @@ int play_game(stack<BoardState> &states, Player &one, Player &two)
 		} else if (bs.check()) {
 			cout << to_play << " is in check." << endl;
 		}
+		if (bs.get_half_turn() >= 100)
+			cout << "Fifty move rule hit, resign for draw" << endl;
 		// command loop
 		while(1) {
 			cout << to_play
@@ -250,11 +253,22 @@ int play_game(stack<BoardState> &states, Player &one, Player &two)
 				BoardState bs_copy = bs;
 				bs_copy.set_castling_rights(new_move);
 				bs_copy.move(new_move);
+				ply++;
+				if (ply > 0 && ply % 2 == 0) {
+					bs_copy.inc_full_turn();
+					ply = 0;
+				}
 				bs_copy.set_enpassant_sqr(new_move);
 				bs_copy.toggle_turn();
 				states.push(bs_copy);
 				break;
 			} if (command == "resign") { 
+				if (bs.get_half_turn() >= 100) {
+					cout << "Stalemate!" << endl;
+					one.score += 0.5;
+					two.score += 0.5;
+					return 1;
+				}
 				string winner = (bs.get_turn() == Colour::WHITE)
 					? "Black" : "White";
 				cout << winner << " wins!" << endl;

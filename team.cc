@@ -1,6 +1,5 @@
 #include "team.h"
 #include <cassert>
-#include <iostream>
 
 Team::Team(Colour colour) : colour{colour}
 {
